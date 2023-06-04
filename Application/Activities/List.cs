@@ -33,7 +33,6 @@ namespace Application.Activities
             // CancellationToken is provided by default when creating the request handler 
             // this is helpful if the data being fetched will take a long time for the user to receive or a fail-safe action 
             // when internal connection error is occured. 
-            // public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
             public async Task<List<Activity>> Handle(Query request,CancellationToken cancellationToken)
             {
                 return await _context.Activities.ToListAsync();
