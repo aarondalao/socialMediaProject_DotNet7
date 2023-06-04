@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Button, Header, List } from 'semantic-ui-react';
-import { Activity } from '../models/activity';
-
+import React, { Fragment, useEffect, useState } from "react";
+import axios from "axios";
+import { Container, List } from "semantic-ui-react";
+import { Activity } from "../models/activity";
+import NavBar from "./navBar";
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([]);
-  
+
   useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/api/activities')
-    .then(response => {
-      setActivities(response.data);
-    })
+    axios
+      .get<Activity[]>("http://localhost:5000/api/activities")
+      .then((response) => {
+        setActivities(response.data);
+      });
   }, []);
-  
 
   return (
-    <div>
-        <Header as='h2' icon='users' content='Reactivities'/>
+    <Fragment>
+      <NavBar />
+      <Container style={{marginTop: '7em'}}>
         <List>
-          { activities.map(activity => (
-            <List.Item key ={ activity.id }>
-              { activity.title }
-            </List.Item>
-          )) }
+          {activities.map((activity) => (
+            <List.Item key={activity.id}>{activity.title}</List.Item>
+          ))}
         </List>
-    </div>
+      </Container>
+    </Fragment>
   );
 }
 
