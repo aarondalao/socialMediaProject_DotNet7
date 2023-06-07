@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Container } from "semantic-ui-react";
+import { Button, Container } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
 
 // ui model
@@ -10,12 +10,16 @@ import NavBar from "./navBar";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
+import { useStore } from "../stores/store";
+import { observer } from "mobx-react-lite";
 
 function App() {
+  // data store from provider
+  const { activityStore } = useStore();
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<
-    Activity | undefined
-  >(undefined);
+    Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -89,6 +93,8 @@ function App() {
     <Fragment>
       <NavBar openForm={handleFormOpen} />
       <Container style={{ marginTop: "7em" }}>
+        <h2>{activityStore.title}</h2>
+        <Button content ="Add exclamation point!" positive onClick={activityStore.setTitle} />
         <ActivityDashboard
           activities={activities}
           selectedActivity={selectedActivity}
@@ -106,4 +112,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App) ;

@@ -1,15 +1,20 @@
 import React from "react";
-import ReactDOM from "react-dom/client"; 
+import ReactDOM from "react-dom/client";
 
 import "semantic-ui-css/semantic.min.css";
 import "./app_common/layout/styles.css";
 import App from "./app_common/layout/App";
 import reportWebVitals from "./reportWebVitals";
+import { StoreContext, store } from "./app_common/stores/store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(<App />);
+root.render(
+  <StoreContext.Provider value={store}>
+    <App />
+  </StoreContext.Provider>
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
