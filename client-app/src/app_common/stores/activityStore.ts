@@ -68,6 +68,7 @@ export default class ActivityStore {
     }
 
     openForm = (id?: string) => {
+        console.log('im in open form now')
         id ? this.selectActivity(id) : this.cancelSelectedActivity();
         this.editMode = true;
     }

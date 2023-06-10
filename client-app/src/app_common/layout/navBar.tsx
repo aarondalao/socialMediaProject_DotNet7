@@ -21,7 +21,10 @@ export default function NavBar() {
           <Button
             positive
             content="Create Activity"
-            onClick={() => activityStore.openForm()}
+            onClick={() => {
+              activityStore.openForm()
+              console.log('clicked')
+            }}
           />
         </Menu.Item>
       </Container>

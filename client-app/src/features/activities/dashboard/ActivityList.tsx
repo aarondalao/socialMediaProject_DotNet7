@@ -19,6 +19,7 @@ export default function ActivityList({
   // from dataStore
   const {activityStore} = useStore();
 
+
   function handleDeleteActivity(
     e: SyntheticEvent<HTMLButtonElement>,
     id: string
