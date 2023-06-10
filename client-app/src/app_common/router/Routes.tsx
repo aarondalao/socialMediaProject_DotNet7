@@ -1,17 +1,20 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
-import App from "../layout/App";
-import Homepage from "../../features/home/Homepage";
-import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
-import ActivityForm from "../../features/activities/form/ActivityForm";
+import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import App from '../layout/App';
+import Homepage from '../../features/home/Homepage';
+import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
+import ActivityForm from '../../features/activities/form/ActivityForm';
+import ActivityDetails from '../../features/activities/details/ActivityDetails';
 
 export const routes: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     element: <App />,
     children: [
-      { path: "", element: <Homepage /> },
-      { path: "activities", element: <ActivityDashboard /> },
-      { path: "createActivity", element: <ActivityForm /> },
+      { path: '', element: <Homepage /> },
+      { path: 'activities', element: <ActivityDashboard /> },
+      { path: 'activities/:id', element: <ActivityDetails /> },
+      { path: 'createActivity', element: <ActivityForm /> },
+      
     ],
   },
 ];
