@@ -8,11 +8,17 @@ import { v4 as uuid } from 'uuid';
 export default class ActivityStore {
     // Practice run : IGNORE
     // title = "Hello from MobX";
-    activities: Activity[] = [];
+
+    // storing activity in the client app as an array
+    // activities: Activity[] = [];
+
+    // storing activity in the client app as a key|value pair called maps
+    activityRegistry = new Map<string, Activity>();
+
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading = false;
-    loadingInitial = false;
+    loadingInitial = true;
 
     constructor() {
         // can do this
@@ -32,8 +38,11 @@ export default class ActivityStore {
     //     this.title = this.title + "!"
     // }
 
+    get activitiesByDate() {
+        return Array.from(this.activityRegistry.values()).sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+    }
+
     loadActivities = async () => {
-        this.setLoadingInitial(true);
         try {
             // activities from API
             const activities = await agent.Activities.list();
@@ -44,7 +53,12 @@ export default class ActivityStore {
                 // and then take the first element from that array
                 // finally push the first element to the activities array
                 activity.date = activity.date.split('T')[0];
-                this.activities.push(activity);
+
+                // array method
+                // this.activities.push(activity);
+
+                // map method
+                this.activityRegistry.set(activity.id, activity);
             })
             this.setLoadingInitial(false);
         } catch (error) {
@@ -60,7 +74,8 @@ export default class ActivityStore {
     }
 
     selectActivity = (id: string) => {
-        this.selectedActivity = this.activities.find(a => a.id === id);
+        // this.selectedActivity = this.activities.find(a => a.id === id);
+        this.selectedActivity = this.activityRegistry.get(id);
     }
 
     cancelSelectedActivity = () => {
@@ -85,7 +100,12 @@ export default class ActivityStore {
             // runInAction -> this creates a temporary action that is immediately called.
             // very useful for asynchronous processes
             runInAction(() => {
-                this.activities.push(activity);
+                // array method
+                // this.activities.push(activity);
+
+                // map method
+                this.activityRegistry.set(activity.id, activity)
+
                 this.selectedActivity = activity;
                 this.editMode = false;
                 this.loading = false;
@@ -105,35 +125,44 @@ export default class ActivityStore {
 
             runInAction(() => {
                 // this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
-                this.activities.filter(x => x.id !== activity.id);
-                this.activities.push(activity)
+
+                // array methods 
+                // this.activities.filter(x => x.id !== activity.id);
+                // this.activities.push(activity);
+
+                // map methods
+                this.activityRegistry.set(activity.id, activity);
+
                 this.selectedActivity = activity;
                 this.editMode = false;
-                this.loading  = false;
+                this.loading = false;
             })
         } catch (error) {
             console.log(error)
             runInAction(() => {
-                this.loading  = false;
+                this.loading = false;
             })
         }
     }
 
-    deleteActivity =  async (id:string) => {
+    deleteActivity = async (id: string) => {
         this.loading = true;
 
         try {
             await agent.Activities.delete(id);
-            
-            runInAction(() => {
-                this.activities = [...this.activities.filter(x => x.id !== id)];
 
-                if(this.selectedActivity?.id === id) this.cancelSelectedActivity();
-                
+            runInAction(() => {
+                // array method
+                // this.activities = [...this.activities.filter(x => x.id !== id)];
+
+                // map method
+                this.activityRegistry.delete(id);
+
+                if (this.selectedActivity?.id === id) this.cancelSelectedActivity();
                 this.loading = false;
             })
 
-        }catch(error){
+        } catch (error) {
             console.log(error)
             runInAction(() => {
                 this.loading = false;
