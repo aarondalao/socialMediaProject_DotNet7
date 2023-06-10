@@ -1,8 +1,10 @@
 // import { action, makeAutoObservable, makeObservable, observable } from "mobx";
 
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { Activity } from "../models/activity";
 import agent from "../api/agent";
+import { v4 as uuid } from 'uuid';
+
 export default class ActivityStore {
     // Practice run : IGNORE
     // title = "Hello from MobX";
@@ -55,11 +57,12 @@ export default class ActivityStore {
         }
     }
 
+    // responsible for the loading indicator as soon as you load the page initially
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
     }
 
-    selectActivity = (id:string) => {
+    selectActivity = (id: string) => {
         this.selectedActivity = this.activities.find(a => a.id === id);
     }
 
@@ -68,12 +71,57 @@ export default class ActivityStore {
     }
 
     openForm = (id?: string) => {
-        console.log('im in open form now')
         id ? this.selectActivity(id) : this.cancelSelectedActivity();
         this.editMode = true;
     }
 
     closeForm = () => {
         this.editMode = false;
+    }
+
+    createActivity = async (activity: Activity) => {
+        this.loading = true;
+        activity.id = uuid();
+        try {
+            await agent.Activities.create(activity);
+
+            runInAction(() => {
+                this.activities.push(activity);
+                this.selectedActivity = activity;
+                this.editMode = false;
+                this.loading = false;
+            })
+
+        } catch (error) {
+            console.log(error)
+            runInAction(() => {
+                this.loading = false;
+
+            })
+
+
+        }
+    }
+
+    updateActivity = async (activity: Activity) => {
+        this.loading = true;
+        try {
+            await agent.Activities.update(activity);
+
+            runInAction(() => {
+                // this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
+                this.activities.filter(x => x.id !== activity.id);
+                this.activities.push(activity)
+                this.selectedActivity = activity;
+                this.editMode = false;
+                this.loading  = false;
+            })
+        } catch (error) {
+            console.log(error)
+            runInAction(() => {
+                this.loading  = false;
+            })
+        }
+
     }
 }
