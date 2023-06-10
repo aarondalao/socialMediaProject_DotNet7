@@ -1,7 +1,7 @@
 # socialMediaProject_DotNet7
 A brief Personal Portfolio Project using .Net 7 and React - Typescript
 
-## Project Solution Structure 
+## Multiple Project Solution Structure 
 - API
 - Application
 - Domain
@@ -9,16 +9,25 @@ A brief Personal Portfolio Project using .Net 7 and React - Typescript
 - client-app
 
 ## API Layer | solution
-used Mediator pattern + CQRS (Command and Query Responsibility Segregation) for the API controller endpoints.
+Dependent on Application layer, contains the startup project and the controller of the whole project. 
+- [Microsoft.EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) - Shared design-time components for Entity Framework Core tools.
+- CORS - cross origin resource sharing
 
 ## Application Layer | solution
-A lot of dependencies are used here but i will updating this as soon as possible.
+Dependent on Domain solution. these were the services used on this solution:
+- [Mediatr](https://www.nuget.org/packages/MediatR#readme-body-tab) -  a solid implementation of Mediator pattern with CQRS (Command and Query Responsibility Segregation)
+- [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) - converter of an object into another
 
 ## Domain Layer | Solution
-This solution has the Model/Entity of the the API Layer.
+Dependent on the Persistence layer.This solution has the **Model/Entity** of the the Application Layer.
 
 ## Persistence Layer | Solution
-This solution has our data context and migrations. responsible for storing data to your database. at the development stage i will be using SQLite but ill transition to other better options.
+Dependent on Application layer and provider of data in the domain layer.
+This solution has our data context and migrations. responsible for storing data to database.
+this solution will be using the following: 
+- [Microsoft.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite/8.0.0-preview.4.23259.3) - SQLite database provider for Entity Framework Core.
+
+i will be transitioning to better options
 
 ## Client App Layer (React - Typescript)
 This solution will be using the following:
