@@ -38,9 +38,6 @@ export default class ActivityStore {
             // activities from API
             const activities = await agent.Activities.list();
 
-            // this creates a temporary action that is immediately called.
-            // very useful for asynchronous processes
-
             activities.forEach(activity => {
 
                 // mutate the state activity by spliting the date starting from T 
@@ -85,21 +82,19 @@ export default class ActivityStore {
         try {
             await agent.Activities.create(activity);
 
+            // runInAction -> this creates a temporary action that is immediately called.
+            // very useful for asynchronous processes
             runInAction(() => {
                 this.activities.push(activity);
                 this.selectedActivity = activity;
                 this.editMode = false;
                 this.loading = false;
             })
-
         } catch (error) {
             console.log(error)
             runInAction(() => {
                 this.loading = false;
-
             })
-
-
         }
     }
 
@@ -122,6 +117,27 @@ export default class ActivityStore {
                 this.loading  = false;
             })
         }
+    }
 
+    deleteActivity =  async (id:string) => {
+        this.loading = true;
+
+        try {
+            await agent.Activities.delete(id);
+            
+            runInAction(() => {
+                this.activities = [...this.activities.filter(x => x.id !== id)];
+
+                if(this.selectedActivity?.id === id) this.cancelSelectedActivity();
+                
+                this.loading = false;
+            })
+
+        }catch(error){
+            console.log(error)
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
     }
 }
