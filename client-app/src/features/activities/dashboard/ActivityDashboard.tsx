@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Grid } from "semantic-ui-react";
 import ActivityList from "./ActivityList";
-import ActivityDetails from "../details/ActivityDetails";
 import { useStore } from "../../../app_common/stores/store";
 import { observer } from "mobx-react-lite";
 import LoadingComponent from "../../../app_common/layout/LoadingComponent";
@@ -9,11 +8,13 @@ import LoadingComponent from "../../../app_common/layout/LoadingComponent";
 export default observer(function ActivityDashboard() {
   // data store from provider
   const { activityStore } = useStore();
-  const { selectedActivity, editMode } = activityStore;
+  const { loadActivities, activityRegistry } = activityStore;
 
   useEffect(() => {
-    activityStore.loadActivities();
-  }, [activityStore]);
+    if(activityRegistry.size <= 1){
+      loadActivities();
+    }
+  }, [loadActivities, activityRegistry]);
 
   if (activityStore.loadingInitial) return <LoadingComponent content='Loading App...'/>
 

@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Button, Form, Segment } from "semantic-ui-react";
+import { Button, Form, Header, Segment } from "semantic-ui-react";
 import { useStore } from "../../../app_common/stores/store";
 import { observer } from "mobx-react-lite";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Activity } from "../../../app_common/models/activity";
 import LoadingComponent from "../../../app_common/layout/LoadingComponent";
 import {v4 as uuid} from 'uuid';
@@ -11,7 +11,6 @@ import {v4 as uuid} from 'uuid';
 export default observer(function ActivityForm() {
   const { activityStore } = useStore();
   const {
-    selectedActivity,
     loading,
     createActivity,
     updateActivity,  
@@ -22,6 +21,8 @@ export default observer(function ActivityForm() {
   const { id } =useParams();
 
   const navigate = useNavigate();
+
+  const currentLocation = useLocation();
 
   const [activity, setActivity] = useState<Activity>({
     id: "",
@@ -66,6 +67,13 @@ export default observer(function ActivityForm() {
 
   return (
     <Segment clearing>
+
+      { currentLocation.pathname === '/createActivity' ? (
+        <Header size="large" color="teal"> Create an Activity </Header>
+      ) : (
+        <Header size="large" color="blue"> Edit an Activity </Header>
+      )}
+
       <Form  onSubmit={handleSubmit} autoComplete="off">
         <Form.Input
           placeholder="Title"
@@ -113,6 +121,7 @@ export default observer(function ActivityForm() {
           content="Submit"
         />
         <Button
+          as={Link} to='/activities' 
           floated="right"
           type="button"
           content="Cancel"
