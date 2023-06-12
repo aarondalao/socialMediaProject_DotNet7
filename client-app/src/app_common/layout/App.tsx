@@ -2,18 +2,25 @@ import React, { Fragment } from "react";
 import { Container } from "semantic-ui-react";
 import NavBar from "./navBar";
 import { observer } from "mobx-react-lite";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import Homepage from "../../features/home/Homepage";
 
 function App() {
+  const location = useLocation();
+
   return (
     <Fragment>
-      <NavBar/>
-      <Container style={{ marginTop: "7em" }}>
-        {/* <h2>{activityStore.title}</h2>
-        <Button content ="Add exclamation point!" positive onClick={activityStore.setTitle} /> */}
-        <Outlet />
-      </Container>
+      {location.pathname === "/" ? (
+        <Homepage />
+      ) : (
+        <Fragment>
+          <NavBar />
+          <Container style={{ marginTop: "7em" }}>
+            <Outlet />
+          </Container>
+        </Fragment>
+      )}
     </Fragment>
   );
 }
-export default observer(App) ;
+export default observer(App);
