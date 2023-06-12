@@ -11,7 +11,7 @@ export default function NavBar() {
             alt="logo"
             style={{ marginRight: "30px" }}
           />
-          Reactivities
+          Dev|Life Blogs
         </Menu.Item>
         <Menu.Item as={NavLink} to='/activities' name="Activities" />
         <Menu.Item>
