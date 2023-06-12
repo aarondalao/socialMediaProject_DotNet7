@@ -51,7 +51,7 @@ export default observer(function ActivityForm() {
 
   return (
     <Segment clearing>
-      <Form onSubmit={handleSubmit} autoComplete="off">
+      <Form  onSubmit={handleSubmit} autoComplete="off">
         <Form.Input
           placeholder="Title"
           value={activity.title}
