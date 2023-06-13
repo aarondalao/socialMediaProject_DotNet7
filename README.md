@@ -17,6 +17,7 @@ Dependent on Application layer, contains the startup project and the controller 
 Dependent on Domain solution. these were the services used on this solution:
 - [Mediatr](https://www.nuget.org/packages/MediatR#readme-body-tab) -  a solid implementation of Mediator pattern with CQRS (Command and Query Responsibility Segregation)
 - [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) - converter of an object into another
+- [FluentValidation](https://docs.fluentvalidation.net/en/latest/aspnet.html) - will be used as my validator on the incomming mediatr requests. NOTE: AUTOMATIC Validation is being used.
 
 ## Domain Layer | Solution
 Dependent on the Persistence layer.This solution has the **Model/Entity** of the the Application Layer.
