@@ -5,15 +5,23 @@
     * Should NOT return a value
 */ 
 using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
-
 namespace Application.Activities
 {
     public class Create
     {
         public class Command : IRequest{
             public Activity Activity {get; set;}
+        }
+
+        // validation class
+        public class CommandValidator : AbstractValidator<Command>{
+            public CommandValidator()
+            {
+                RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
+            }
         }
 
         public class Handler : IRequestHandler<Command>
@@ -24,9 +32,6 @@ namespace Application.Activities
             _context = context;
 
             }
-
-            // method to create a new activity
-            // TODO: error checking and validation for bad inputs
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 // add the data in memory
