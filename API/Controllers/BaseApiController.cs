@@ -15,6 +15,10 @@ namespace API.Controllers
         // added: 13/06/23  error response
         protected ActionResult HandleResult<T>(Result<T> result)
         {
+            if (result == null)
+            {
+                return NotFound();
+            }
             if (result.isSuccess && result.Value != null)
             {
                 return Ok(result.Value);
