@@ -12,21 +12,21 @@ namespace API.Controllers
         // api/activities
         // get the list of Activities 
         [HttpGet] 
-        public async Task<ActionResult<List<Activity>>> GetActivities(){
-            return await Mediator.Send(new List.Query());
+        public async Task<IActionResult> GetActivities(){
+            return HandleResult( await Mediator.Send(new List.Query())); 
         }
 
          // api/activities/{id}
          // get an activity
         [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(Guid id){
-            return await Mediator.Send(new Details.Query{Id = id});
+        public async Task<IActionResult> GetActivity(Guid id){    
+            return HandleResult(await Mediator.Send(new Details.Query{Id = id}));
         }
 
         // api/activities/
         [HttpPost]
         public async Task<IActionResult> CreateActivity(Activity activity){
-            return Ok(await Mediator.Send(new Create.Command{Activity = activity}));
+            return HandleResult(await Mediator.Send(new Create.Command{Activity = activity}));
         }
         
         // api/activities/{id}
