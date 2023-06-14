@@ -20,7 +20,6 @@ namespace Application.Activities
                 _context = context;
             }
 
-            // TODO : error checking for bad situations
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities.FindAsync(request.Id);
