@@ -38,4 +38,5 @@ This solution will be using the following:
 - [Axios](https://axios-http.com/docs/intro) - HTTP API fetching 
 - [MobX](https://mobx.js.org/react-integration.html) - for state management 
 - [react-router](https://reactrouter.com/en/main) - for routing
-- [react-toastify](https://fkhadra.github.io/react-toastify/introduction) - React Package for toasting alerts. will be used for error, validation, and request handling. Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems. They’re built with a flexbox, so they’re easy to align and position.
+- [react-toastify](https://fkhadra.github.io/react-toastify/introduction) - React Package for toasting alerts. will be used for error, validation, and request handling. Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems.
+- [Formik](https://formik.org/docs/overview) - a famous helper library to implement forms with built-in validations
