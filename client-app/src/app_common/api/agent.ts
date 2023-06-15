@@ -1,3 +1,11 @@
+/*
+    agent.ts
+
+    this handles requests to be fetched by the controller api, 
+    and the error handling being thrown by the controller api
+
+    
+*/ 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Activity } from '../models/activity';
 import { toast } from 'react-toastify';
@@ -14,28 +22,35 @@ const responseBody = <Type>(response: AxiosResponse<Type>) => response.data;
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
+// TODO: if possible, convert line 19-68 into async -await instead of promise -> then chaining
 // edited: 15/06/23 
 axios.interceptors.response.use(async response => {
     await sleep(1000)
     return response;
 }, (error: AxiosError) => {
 
-    const { data, status } = error.response as AxiosResponse;
+    const { data, status, config } = error.response as AxiosResponse;
 
     switch (status) {
         case 400:
-            if(data.errors){
+
+            // check if what we're getting is a get request
+            if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
+                router.navigate('not-found');
+            }
+
+            if (data.errors) {
                 // refered to as " on our API"
-                const modalStateErrors= [];
-                for(const key in data.errors){
-                    if(data.errors[key]) {
-                        modalStateErrors.push(data.errors[key])
+                const modelStateErrors = [];
+                for (const key in data.errors) {
+                    if (data.errors[key]) {
+                        modelStateErrors.push(data.errors[key])
                     }
                 }
-                throw modalStateErrors.flat();
+                throw modelStateErrors.flat();
 
             }
-            else{
+            else {
                 toast.error(data);
             }
             break;
