@@ -41,3 +41,4 @@ This solution will be using the following:
 - [react-toastify](https://fkhadra.github.io/react-toastify/introduction) - React Package for toasting alerts. will be used for error, validation, and request handling. Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems.
 - [Formik](https://formik.org/docs/overview) - a famous helper library to implement forms with built-in validations
 - [Yup](https://github.com/jquense/yup) - an object validation schema library that works seamlessly with Formik.
+- [react-datepicker](https://reactdatepicker.com/) - A simple and reusable datepicker component for React.
