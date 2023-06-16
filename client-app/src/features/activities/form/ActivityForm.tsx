@@ -7,8 +7,12 @@ import { Activity } from "../../../app/models/activity";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { v4 as uuid } from "uuid";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from 'yup';
+import * as Yup from "yup";
 import MyTextInput from "../../../app/common/form/MyTextInputs";
+import MyTextArea from "./MyTextArea";
+import MySelectInput from "./MySelectInput";
+import { categoryOptions } from "../../../app/common/options/categoryOptions";
+import MyDateInput from "./MyDateInput";
 
 export default observer(function ActivityForm() {
   const { activityStore } = useStore();
@@ -37,7 +41,12 @@ export default observer(function ActivityForm() {
   });
 
   const validationSchema = Yup.object({
-    title: Yup.string().required('The activity title is required')
+    title: Yup.string().required("The activity title is required"),
+    description: Yup.string().required("The activity description is required"),
+    category: Yup.string().required("The activity category is required"),
+    date: Yup.string().required(),
+    venue: Yup.string().required(),
+    city: Yup.string().required(),
   });
 
   useEffect(() => {
@@ -92,39 +101,29 @@ export default observer(function ActivityForm() {
         validationSchema={validationSchema}
       >
         {({ handleSubmit }) => (
-
-          
-          <Form className='ui form' onSubmit={handleSubmit} autoComplete="off">
-            <MyTextInput name="title" placeholder="Title" />
-            <MyTextInput
-              placeholder="Title"
-              name="title"
-            />
-            <MyTextInput
+          <Form className="ui form" onSubmit={handleSubmit} autoComplete="off">
+            <MyTextInput placeholder="Title" name="title" />
+            <MyTextArea
               placeholder="Description"
               name="description"
+              rows={10}
             />
-            <MyTextInput
+            <MySelectInput
               placeholder="Category"
               name="category"
+              options={categoryOptions}
             />
 
-            {/*  TODO: implement date form here */}
-            <MyTextInput
-              placeholder="Date"
-              
+            <MyDateInput
+              placeholderText="Date"
               name="date"
+              showTimeSelect
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy  h:mm aa"
             />
 
-            {/* ================================== end todo ========================================================= */}
-            <MyTextInput
-              placeholder="City"
-              name="city"
-            />
-            <MyTextInput
-              placeholder="Venue"
-              name="venue"
-            />
+            <MyTextInput placeholder="City" name="city" />
+            <MyTextInput placeholder="Venue" name="venue" />
 
             <Button
               loading={loading}
