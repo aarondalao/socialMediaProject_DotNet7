@@ -11,7 +11,7 @@ export default function NotFound(){
                 
             </Header>
             <Segment.Inline>
-                <Button as={Link} to='activities' content='Return to activities page'/>
+                <Button as={Link} to='/activities' content='Return to activities page'/>
             </Segment.Inline>
         </Segment>
     );

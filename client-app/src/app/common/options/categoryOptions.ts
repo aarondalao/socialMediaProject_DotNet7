@@ -15,6 +15,6 @@ export const categoryOptions = [
         text: 'Music', value: 'music'
     },
     {
-        text: 'Trave', value: 'travel'
+        text: 'Travel', value: 'travel'
     },
 ];
