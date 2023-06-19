@@ -42,3 +42,4 @@ This solution will be using the following:
 - [Formik](https://formik.org/docs/overview) - a famous helper library to implement forms with built-in validations
 - [Yup](https://github.com/jquense/yup) - an object validation schema library that works seamlessly with Formik.
 - [react-datepicker](https://reactdatepicker.com/) - A simple and reusable datepicker component for React.
+- [date-fns](https://date-fns.org/docs/Getting-Started) - JavaScript date object manipulator 
