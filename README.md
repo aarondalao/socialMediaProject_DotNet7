@@ -21,7 +21,7 @@ Dependent on Domain solution. these were the services used in this solution:
 - [Asp.Net Identity Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-7.0&tabs=visual-studio) - Authentication management
 
 ## Domain Layer | Solution
-Dependent on the Persistence layer. This solution has the **Model/Entity** of the Application Layer.
+Dependent on the Persistence layer. This solution has the **Models/Entities** like the activities and users of the Application Layer.
 
 ## Persistence Layer | Solution
 Dependent on the Application layer and provider of data in the domain layer.
