@@ -39,6 +39,8 @@ namespace API.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<Create>();
 
+            
+
             return services;
         }
     }
