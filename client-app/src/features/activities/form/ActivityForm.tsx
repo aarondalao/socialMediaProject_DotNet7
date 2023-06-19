@@ -1,12 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Button, FormField, Header, Label, Segment } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Button, Header, Segment } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Activity } from "../../../app/models/activity";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { v4 as uuid } from "uuid";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import MyTextInput from "../../../app/common/form/MyTextInputs";
 import MyTextArea from "./MyTextArea";
@@ -18,22 +17,20 @@ export default observer(function ActivityForm() {
   const { activityStore } = useStore();
   const {
     loading,
-    createActivity,
-    updateActivity,
     loadActivity,
     loadingInitial,
   } = activityStore;
 
   const { id } = useParams();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const currentLocation = useLocation();
 
   const [activity, setActivity] = useState<Activity>({
     id: "",
     title: "",
-    date: "",
+    date: null,
     description: "",
     category: "",
     city: "",
