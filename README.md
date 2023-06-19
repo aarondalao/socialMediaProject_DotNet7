@@ -18,6 +18,7 @@ Dependent on Domain solution. these were the services used in this solution:
 - [Mediatr](https://www.nuget.org/packages/MediatR#readme-body-tab) -  a solid implementation of Mediator pattern with CQRS (Command and Query Responsibility Segregation)
 - [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) - converter of an object into another
 - [FluentValidation](https://docs.fluentvalidation.net/en/latest/aspnet.html) - will be used as my validator on the incoming Mediatr requests. NOTE: AUTOMATIC Validation is being used.
+- [Asp.Net Identity Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-7.0&tabs=visual-studio) - login functionality and users, passwords, profile data, roles, claims, tokens, email confirmation management.
 
 ## Domain Layer | Solution
 Dependent on the Persistence layer. This solution has the **Model/Entity** of the Application Layer.
