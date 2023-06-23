@@ -14,7 +14,8 @@ export default function Homepage() {
           HtC
         </Header>
         <Header as='h2' inverted content='Welcome to How-to Club'/>
-        <Button as={Link} to='/activities' size="huge" inverted content="take me to the movement!"/>
+        <Button as={Link} to='/login' size="huge" inverted content="Login"/>
+        
       </Container>
     </Segment>
   );
