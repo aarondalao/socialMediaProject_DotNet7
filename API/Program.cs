@@ -1,15 +1,23 @@
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 using API.Extensions;
 using API.Middleware;
-using Microsoft.AspNetCore.Identity;
+using Persistence;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
+// edited 23/06/23
+// effectively this means every single endpoint in the API now Requires authentication EXCEPT AccountController
+builder.Services.AddControllers(opt => {
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
 
 // extension for the third party dependencies
 // refactored this 3/6/23
