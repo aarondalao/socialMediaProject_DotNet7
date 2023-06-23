@@ -44,3 +44,19 @@ This solution will be using the following:
 - [Yup](https://github.com/jquense/yup) - an object validation schema library that works seamlessly with Formik.
 - [react-datepicker](https://reactdatepicker.com/) - A simple and reusable datepicker component for React.
 - [date-fns](https://date-fns.org/docs/Getting-Started) - JavaScript date object manipulator 
+
+
+### TODOs
+
+- Security
+    - [ ] reseach about asymmetric security keys and implement it here to support HTTPS
+    - [ ] token validation to chech token expiry. currently the token is valid for 7 DAYS.
+    - [ ] it's fine to send tokens over the network in DEV. NOT IN PROD. use HTTPS in prod
+
+- Data Persistence
+    - [ ] - research about better data store than SQLite
+    - [ ] - seed.cs |  remove line 21 -24 and remember not to use that in prod. 
+
+- client
+    - [ ] - agent.ts |  if possible, convert line 19-68 into async -await instead of promise -> then chaining
+    - [ ] - Homepage.tsx | background change into stock video
