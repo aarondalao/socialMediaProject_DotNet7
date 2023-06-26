@@ -19,9 +19,17 @@ const sleep = (delay: number) => {
     })
 }
 
+axios.defaults.baseURL = 'http://localhost:5000/api';
+
 const responseBody = <Type>(response: AxiosResponse<Type>) => response.data;
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+// every requests the client does this interceptor will run
+// if the client has a token, it will attach that token into config.headers.Authorization
+axios.interceptors.request.use(config=>{
+    const token = store.commonStore.token;
+    if( token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+})
 
 // TODO: if possible, convert line 19-68 into async -await instead of promise -> then chaining
 // edited: 15/06/23 
