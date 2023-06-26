@@ -17,8 +17,8 @@ export default observer(function ActivityDashboard() {
     }
   }, [loadActivities, activityRegistry]);
 
-  if (activityStore.loadingInitial) return <LoadingComponent content='Loading App...'/>
 
+  if (activityStore.loadingInitial) return <LoadingComponent  content='Loading Events and Activities near you...'/>
   return (
     <Grid>
       <Grid.Column width="10">
