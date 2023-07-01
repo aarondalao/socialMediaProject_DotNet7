@@ -4,6 +4,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { Activity } from "../models/activity";
 import agent from "../api/agent";
 import { v4 as uuid } from 'uuid';
+import { store } from "./store";
 
 export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
@@ -19,7 +20,7 @@ export default class ActivityStore {
 
     get activitiesByDate() {
         return Array.from(this.activityRegistry.values())
-        .sort((a, b) => a.date!.getTime() - b.date!.getTime());
+            .sort((a, b) => a.date!.getTime() - b.date!.getTime());
     }
 
     get groupedActivities() {
@@ -28,7 +29,7 @@ export default class ActivityStore {
                 const date = activity.date!.toISOString().split('T')[0];
                 activities[date] = activities[date] ? [...activities[date], activity] : [activity];
                 return activities;
-            },{} as {[key: string] : Activity[]})
+            }, {} as { [key: string]: Activity[] })
         )
     }
 
@@ -77,6 +78,16 @@ export default class ActivityStore {
     }
 
     private setActivity = (activity: Activity) => {
+        const user = store.userStore.user;
+
+        if (user) {
+            activity.isGoing = activity.attendees!.some(
+                a => a.username === user.username
+            )
+        }
+
+        activity.isHost = activity.hostUsername === user!.username;
+        activity.host = activity.attendees?.find(x => x.username === activity.hostUsername);
         activity.date = new Date(activity.date!);
         this.activityRegistry.set(activity.id, activity);
     }
