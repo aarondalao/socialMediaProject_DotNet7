@@ -1,3 +1,9 @@
+/*
+    notes:
+
+    hostUsername, isCancelled, and attendees are nullable for now so i can avoid strict data typing errors of ts
+*/ 
+
 import { Profile } from "./profile";
 
 export interface Activity {

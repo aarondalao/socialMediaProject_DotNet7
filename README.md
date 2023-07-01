@@ -31,6 +31,12 @@ this solution will be using the following:
 
 I will be transitioning to better options
 
+## Infrastructure Layer | Solution
+TODO: will be updating this.
+new solution with a sole purpose of getting username from the application layer.
+
+
+
 ## Client App Layer (React - Typescript)
 This solution will be using the following:
 - [React](https://react.dev/reference/react) - main Frontend Library for creating components
