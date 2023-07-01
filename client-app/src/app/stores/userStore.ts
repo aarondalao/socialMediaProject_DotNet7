@@ -5,7 +5,7 @@ import { store } from "./store";
 import { router } from "../router/Routes";
 
 export default class UserStore {
-    user: User | null = null
+    user: User | null = null;
 
     constructor() {
         makeAutoObservable(this);

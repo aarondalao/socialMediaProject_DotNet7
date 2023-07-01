@@ -40,28 +40,36 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
                   content={activity.title}
                   style={{ color: "white" }}
                 />
-                <p>{ format(activity.date!, 'dd MMM yyyy h:mm aa') }</p>
+                <p>{format(activity.date!, "dd MMM yyyy h:mm aa")}</p>
                 <p>
-                  {" "}
-                  Hosted by <strong> Bob</strong>{" "}
+                  Hosted by{" "}
+                  <strong>
+                    <Link to={`/profiles/${activity.host?.username}`}>
+                      {activity.host?.displayName}
+                    </Link>
+                  </strong>
                 </p>
               </Item.Content>
             </Item>
           </Item.Group>
         </Segment>
       </Segment>
-    <Segment clearing attached='bottom'>
-        <Button color="teal">
-            Join Activity
-        </Button>
-        <Button>
-            Cancel Attendance
-        </Button>
-        <Button as={Link} to={`/manage/${activity.id}`} color="orange" floated="right">
+      <Segment clearing attached="bottom">
+        {activity.isHost ? (
+          <Button
+            as={Link}
+            to={`/manage/${activity.id}`}
+            color="orange"
+            floated="right"
+          >
             Manage Event
-        </Button>
-    </Segment>
-
+          </Button>
+        ) : activity.isGoing ? (
+          <Button>Cancel Attendance</Button>
+        ) : (
+          <Button color="teal">Join Activity</Button>
+        )}
+      </Segment>
     </Segment.Group>
   );
 });
