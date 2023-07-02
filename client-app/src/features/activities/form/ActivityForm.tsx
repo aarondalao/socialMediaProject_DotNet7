@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 
 // models and state management stores
 import { useStore } from "../../../app/stores/store";
-import { Activity } from "../../../app/models/activity";
+import { ActivityFormValues } from "../../../app/models/activity";
 import { categoryOptions } from "../../../app/common/options/categoryOptions";
 
 // components
@@ -23,7 +23,6 @@ import MyDateInput from "./MyDateInput";
 export default observer(function ActivityForm() {
   const { activityStore } = useStore();
   const {
-    loading,
     createActivity,
     updateActivity,
     loadActivity,
@@ -36,15 +35,7 @@ export default observer(function ActivityForm() {
 
   const currentLocation = useLocation();
 
-  const [activity, setActivity] = useState<Activity>({
-    id: "",
-    title: "",
-    date: null,
-    description: "",
-    category: "",
-    city: "",
-    venue: "",
-  });
+  const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
   const validationSchema = Yup.object({
     title: Yup.string().required("The activity title is required"),
@@ -58,13 +49,13 @@ export default observer(function ActivityForm() {
   useEffect(() => {
     if (id) {
       loadActivity(id).then((activity) => {
-        setActivity(activity!);
+        setActivity(new ActivityFormValues(activity));
       });
     }
   }, [id, loadActivity]);
 
-  function handleFormSubmit(activity: Activity) {
-    if (!activity.id || activity.id.length === 0) {
+  function handleFormSubmit(activity: ActivityFormValues) {
+    if (!activity.id) {
       activity.id = uuid();
       createActivity(activity).then(() => {
         navigate(`/activities/${activity.id}`)
@@ -129,7 +120,7 @@ export default observer(function ActivityForm() {
             <MyTextInput placeholder="Venue" name="venue" />
 
             <Button
-              loading={loading}
+              loading={isSubmitting}
               floated="right"
               positive
               type="submit"
