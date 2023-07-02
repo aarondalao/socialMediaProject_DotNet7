@@ -12,6 +12,14 @@ export default function ActivityListItem({ activity }: Props) {
   return (
     <Segment.Group>
       <Segment>
+        {activity.isCancelled && (
+          <Label
+            attached="top"
+            color="red"
+            content="Cancalled"
+            style={{ textAligt: "center" }}
+          />
+        )}
         <Item.Group>
           <Item>
             <Item.Image size="tiny" circular src="/assets/user.png" />
@@ -41,14 +49,12 @@ export default function ActivityListItem({ activity }: Props) {
           </Item>
         </Item.Group>
       </Segment>
-
       <Segment>
         <span>
           <Icon name="clock" /> {format(activity.date!, "dd MMM yyyy h:mm aa")}
           <Icon name="marker" /> {activity.venue}
         </span>
       </Segment>
-
       {/* TODO:  temporary workaround for null flag. will be changed */}
       <Segment secondary>
         <ActivityListItemAttendee attendees={activity.attendees!} />
