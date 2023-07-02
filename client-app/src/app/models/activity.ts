@@ -34,11 +34,10 @@ export class ActivityFormValues {
     category: string ="";
     description: string = "";
     date: Date| null = null;
-    city: string = '';
+    city: string = "";
     venue: string = "";
 
     constructor(activity?: ActivityFormValues) {
-        
         if(activity){
             this.id = activity.id;
             this.title = activity.title;
@@ -47,7 +46,6 @@ export class ActivityFormValues {
             this.date = activity.date;
             this.city = activity.city;
             this.venue = activity.venue;
-
         }
     }
 }
