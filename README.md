@@ -33,7 +33,8 @@ I will be transitioning to better options
 
 ## Infrastructure Layer | Solution
 TODO: will be updating this.
-new solution with a sole purpose of getting username from the application layer.
+new solution with purpose of getting username via IUserAccessor.cs and image via IPhotoAccessor.cs from the application layer.
+- [cloudinary](https://cloudinary.com/) - SaaS tech that provides cloud-based image and video management services. I'll use this to upload, store, manage, and manipulate images for this project.
 
 
 
@@ -50,6 +51,7 @@ This solution will be using the following:
 - [Yup](https://github.com/jquense/yup) - an object validation schema library that works seamlessly with Formik.
 - [react-datepicker](https://reactdatepicker.com/) - A simple and reusable datepicker component for React.
 - [date-fns](https://date-fns.org/docs/Getting-Started) - JavaScript date object manipulator 
+
 
 
 ### TODOs
