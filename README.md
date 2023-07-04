@@ -69,6 +69,9 @@ This solution will be using the following:
     - [ ] - agent.ts |  if possible, convert line 19-68 into async -await instead of promise -> then chaining
     - [ ] - Homepage.tsx | background change into stock video
 
+- Miscellaneous
+  - [ ] - set up Waka time metrics. get the GH_KEYS at my usual place.
+
 ### Waka Time Metrics
 <!--START_SECTION:waka-->
 <!--END_SECTION:waka-->
