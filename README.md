@@ -51,6 +51,8 @@ This solution will be using the following:
 - [Yup](https://github.com/jquense/yup) - an object validation schema library that works seamlessly with Formik.
 - [react-datepicker](https://reactdatepicker.com/) - A simple and reusable datepicker component for React.
 - [date-fns](https://date-fns.org/docs/Getting-Started) - JavaScript date object manipulator 
+- [react-dropzone](https://github.com/react-dropzone/react-dropzone) - simple drag-and-drop image/file uploader for react hooks
+- [react-cropper](https://github.com/react-cropper/react-cropper) - Cropperjs as React component
 
 
 
