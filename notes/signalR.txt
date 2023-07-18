@@ -1,0 +1,23 @@
+signalR steps
+1) set up and configure migrations
+	a) in domain solution, create new class called Comment. create properties namely Id which is an int, 
+    body with a string data type, Author with an AppUser model type, Activity with an Activity Type,
+    CreatedAt property with a DateTime type and with a value of UtcNow. 
+    b) add a relationship between the newly created model/entity Comment with the Activity model/entity
+        * to do this, create a property with this statement:
+            <acess modifier> ICollection<Type<model/entity>> name = new List<Type<model>>();
+    c) Configure DataContext.cs:
+        * create new DbSet with an type of Comment entity and a name of Comments.
+
+        ***extra*** **WILL NOT BE IMPLEMENTING THIS ***
+            by default, entity framework restricts deletion t model that has relationship due to entity framework conventions.
+            but theres a way to implement this delete behavior. to do this:
+
+            builder.Entity<modelTypeWithARelationship>()
+            .hasOne(a => a.Model1WithRelationship)
+            .withMany(c => c.Model2WithRelationship)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        * migrate the new DbSet via:
+            dotnet migrations add CommentEntityAdded --project NameOfTheProjectToBeMigrated 
+            --startup-project NameOfTheStartupProjectToUse
