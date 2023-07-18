@@ -46,7 +46,6 @@ namespace Application.Profiles
 
                 // current behavior is this wil throw 400 bad request if no changes were made on bio or display name.
                 // to change this into always get 200 status code regardless of whether there were changes made,
-
                 _context.Entry(user).State = EntityState.Modified;
 
 
