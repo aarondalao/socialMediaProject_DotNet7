@@ -31,7 +31,10 @@ namespace API.Extensions
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                    policy.AllowAnyMethod()
+                    .AllowCredentials()// <- added this 20/08 to solve Access control allow credentials header response error. CORS is blocking
+                    .AllowAnyHeader() 
+                    .WithOrigins("http://localhost:3000");
                 });
             });
 
@@ -50,7 +53,7 @@ namespace API.Extensions
             // added this 3/7/2023
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
-            
+
             // added this 19/08
             services.AddSignalR();
 
