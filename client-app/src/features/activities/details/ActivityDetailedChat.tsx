@@ -4,9 +4,11 @@
 */
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
-import { Button, Form, Header, Segment, Comment } from "semantic-ui-react";
+import { Button, Header, Segment, Comment } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 import { Link } from "react-router-dom";
+import { Formik, Form } from "formik";
+import MyTextArea from "../form/MyTextArea";
 
 interface Props {
   activityId: string;
@@ -35,7 +37,7 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
       >
         <Header>Chat about this event</Header>
       </Segment>
-      <Segment attached>
+      <Segment attached clearing>
         <Comment.Group>
           {commentStore.comments.map((comment) => (
             <Comment key={comment.id}>
@@ -52,15 +54,28 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
             </Comment>
           ))}
 
-          <Form reply>
-            <Form.TextArea />
-            <Button
-              content="Add Reply"
-              labelPosition="left"
-              icon="edit"
-              primary
-            />
-          </Form>
+          <Formik
+            onSubmit={(values, { resetForm }) =>
+              commentStore.addComment(values).then(() => resetForm)
+            }
+            initialValues={{ body: "" }}
+          >
+            {({ isSubmitting, isValid }) => (
+              <Form className="ui form">
+                <MyTextArea placeholder="Add comment" name='body' rows={2} />
+                <Button
+                  content="Add Reply"
+                  labelPosition="left"
+                  icon="edit"
+                  primary
+                  loading={isSubmitting}
+                  disabled={isSubmitting || !isValid}
+                  type="submit"
+                  floated="right"
+                />
+              </Form>
+            )}
+          </Formik>
         </Comment.Group>
       </Segment>
     </>
