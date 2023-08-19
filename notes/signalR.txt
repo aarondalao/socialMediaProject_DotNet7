@@ -77,4 +77,6 @@ signalR steps
 
 4) create a list comment
 
+5) add SignalR to the client
+
 
