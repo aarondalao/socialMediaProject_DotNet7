@@ -67,3 +67,14 @@ signalR steps
     f) in the same create class handler, create a class handler with an interface of IRequestHandler with generic type
     of <Command, Result<CommentDto>>. Then add the interface for IRequestHandler by Ctrl+. 
 
+    g) generate a constructor, or simply hardcode the constructor for the Handler class. then inside the constructor's 
+    parenthesis, define your parameters, namely, DataContext context, IMapper mapper, IUserAccessor userAccessor. these
+    are needed to: first, access the database context, then, shape the data using the mapping profile configurations, 
+    last, to access the current user.
+
+    f) initialize all field from parameters
+
+
+4) create a list comment
+
+
