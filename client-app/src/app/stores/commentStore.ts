@@ -24,11 +24,19 @@ export default class CommentStore {
             this.hubConnection.start().catch(error => console.log('error establishing the connection: ', error));
 
             this.hubConnection.on('LoadComments', (comments: ChatComment[]) => {
-                runInAction(() => this.comments = comments);
+                runInAction(() => {
+                    comments.forEach(comment => {
+                        comment.createdAt = new Date(comment.createdAt + 'Z');
+                    })
+                    this.comments = comments
+                });
             });
 
-            this.hubConnection.on('ReceiveComment' , (comment: ChatComment) => {
-                runInAction(() => this.comments.push(comment));
+            this.hubConnection.on('ReceiveComment', (comment: ChatComment) => {
+                runInAction(() => { 
+                    comment.createdAt = new Date(comment.createdAt)
+                    this.comments.unshift(comment) 
+                });
             });
 
 
@@ -44,7 +52,7 @@ export default class CommentStore {
         this.stopHubConnection();
     }
 
-    addComment = async (values:any) => {
+    addComment = async (values: any) => {
         values.activityId = store.activityStore.selectedActivity?.id;
 
         try {
