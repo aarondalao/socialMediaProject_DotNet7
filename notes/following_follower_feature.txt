@@ -1,0 +1,232 @@
+notes:
+    1a and 1b done
+
+
+Learning goal:
+* implement the following feature from end to end
+* self referencing many to many relationship
+
+Major steps:
+
+1) Adding join Entity
+
+    a) create new join entity named UserFollowings in Domain Directory
+    b) props are as follows:
+            public access modifier 
+            string ObserverId
+            AppUser Observer
+            string TargetId
+            AppUser Target
+    c)  add the newly created entity to AppUser entity to create a relationship between the two.
+            add 2 new properties named followers and followees:
+                public ICollection<UserFollowing> Followings
+                public ICollection<UserFollowing> Followers
+    d) configure the new relationship in the DataContext.cs
+            just after the constructor:
+                public DbSet<*THE_NEW_ENTITY*>  UserFollowings
+            configure the new relationship on the OnModelCreating method:
+
+                builder.Entity<*THE_NEW_ENTITY*>(x => {
+                    b.HasKey(k=> new { k.ObserverId, k.TargetId } );
+                    b.HasOne(o => o.Observer)
+                        .WithMany(f => f.Followings)
+                        .HasForeignKey(o => o.ObserverId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne(t => t.Target)
+                        .WithMany(f => f.Followers)
+                        .HasForeignKey(t => t.TargetId)
+                        .OnDelete(DeleteBehavior.Cascade);    
+                });
+    e) stop the dev server
+
+    f) step back one folder in the directory then perform new migration via:
+            dotnet ef migrations add FollowingEntityAdded -p Persistence -s API
+
+    g) check the migrations at Persistence/Migrations
+
+2) Adding a handler for following
+
+    a) create a new feature folder named Followers in Application Directory then create a c# class called FollowToggle.cs
+
+    b) following the same pattern (Command and Query Responsibility Segregation or CQRS) as we did in the previous features
+    , create a class inside the public class FollowToggle with this:
+
+        public class Command : IRequest<Result<Unit>>
+
+    dont forget to import usings like Application.Core and Mediatr
+    
+    c) Inside the command class, create a new property named TargetUsername with access modifier of public and a string
+    data type.
+
+    d) the outside the command class, create a new class called Handler implements with IRequestHandler with constraint 
+    types of <Command, Result<Unit>>. Then implement the interface.
+
+    e) make the generated interface class Task asynchronous and then generate a constructor for the Handler class
+
+    f) define the parameters of the constructor by DataContext context and IUserAccessor userAccessor. then import 
+    necessary usings, lastly initialize the field from parameter.
+
+    g) define the logic inside the Task<Result<Unit>>
+        a) create variable named observer with a value of an await _context.Users.FirstOrDefaultAsync from the database. 
+        inside the FirstOrDefaultAsync, either create a LAMBDA EXPRESSION or ANONYMOUS FUNCTIONS (can be as an arrow 
+        function) containing the UserName from the Users context being compared equally to the userAccessors getUsername().
+
+        b) create another varable named target and use this variable to save :
+            an anonymous function containing your chosen variable containing a equality operation comparing the UserName
+            from the _context.Users.FirstOrDefaultAsync to the requested TargetUsername.
+        
+        c) create an if statement with a condition comparing if the target is equal to null. if true, return null.
+
+        d) attempt to get the following from the database by creating a variable (choose what you like). then the value of
+        the variable shoul contain the id of the observer (be careful here) and the id of target (be careful here) from 
+        the UserFollowings table. you can access the table using the DataContext _context and using the findAsync method.
+
+        e) create an if statement with a condition comparing if the following variable is equal to null. if true, create
+            a new following with a properties needed to create a new following object, that is, the observer and the 
+            target. then save the new following object to the database by using the DataContext context, direct it to 
+            UserFollowings Table, then add it using the Add method. if the following is false, then we need to unfollow
+            by accessing the _context.UserFollowings.remove method
+
+        f) save the changes in the database by:
+                var success = _context.SaveChangesAsync() > 0;
+        
+        g) check if the success is actually successful by:
+                if(success) return Result<Unit>.Success(Unit.Value)
+        h)  default return for this for failure. you can define this by:
+            return Result<Unit>.Failure("failure log message");
+
+3) adding the controller
+    a)inside the API/Controllers folder, create a new class file named FollowController.cs. on public class FollowController,
+    apply an inheritance by deriving it to the BaseApiController.
+
+    b) add the httpPost flag with "{username}" inside the open close parenthesis. then define the controller endpoint by:
+            access modifier : public
+            IsAsync?: yes
+            Task<IActionResult>
+            class name: Follow
+            parameter(string username)
+        dont forget to import necessary namespace dependencies to remove the errors.
+
+    c) inside the new controller enpoint, make a return statement with:
+        HandleResult(await Mediator.send(new FollowToggle.Command{TargetUsername = username}));
+    
+    d) if the dev server is running, stop the service then run in again. if not, go to step e.
+
+    e) test the controller if i can add the new following into the database using Postman by:
+        a) login as bob and save token to env 
+            post: {{url}}/api/account/login
+            Header: content type: application/json
+            body: {
+	            "email": "bob@test.com",
+	            "password": guess the password
+            }
+        b) get bob's profile to check if connected to the database
+            get: {{url}}/api/profiles/bob
+            header: Authorization : Bearer {{token}}
+
+        c) follow tom
+            post: {{url}}/api/follow/tom
+            header: Authorization : Bearer {{token}}
+        
+    f) additional checking need to be done by verifying it in the SQLite
+
+4) update the profile class
+
+    a) fron Application/Profiles folder, update the profile.cs using this:
+
+        public bool Following           -> this will our cue to know if the currently logged in user is following that 
+                                            particular user
+        public int FollowingCount       -> self explanatory
+        public int FollowerCount        -> self explanatory
+    
+    b) from Application/Core follder, open MappingProfiles.cs and modify it by:
+        a) look for this : 
+            CreateMap<AppUser, Profiles.Profile>()
+            .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.isMain).Url));
+
+        b) add this after <AppUser, Profiles.Profile>() :
+            .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
+            .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Following.Count));
+
+    c) test the new functionality in postman
+
+5) return a list of followers - return a list of users that is following a particular user or is being followed by a 
+    particular user.
+
+    Note: FollowAction returns a list of either a followings or a followers, depending on the request in the client side. 
+
+    a) in application/followers folder, create a new class file called List. in this, create a query class with a public
+    access mod derived from IRequest with a type of <Result<List<Profiles.Profile>>>
+
+    b) this query will contain a properties of public string Username and public string FollowAction
+
+    c) outside the query, create a class for the Handler deriving IRequestHandler<Query, Result<List<Profiles.Profile>>>. then implement
+        the interface. attach the asynchronous flag for the Handler class.
+
+    d) generate a constructor for the Handler class with the parameters of DataContext context  to access the database 
+    and IMapper mapper to shape our data into json format. after this, add all necessary usings for us to use these two
+    Handler dependencies. then, initialize field from parameter and modify these fields from this.**YOUR_FIELD** into 
+    _**YOUR_FIELD**. DONT FORGET TO MODIFY THE PROFILE AT THE TASK<Result<LIST<PROFILE>>> INTO <PROFILES.PROFILE>
+
+    e) dont forget to attach  the asynchronous flat on the TASK<LIST>. Then, create a new variable named profiles with a value 
+    of a new List of type Profiles.Profile
+
+    f) create a switch for the request.FollowAction with this case:
+        "followers":
+            profiles = await _context.UserFollowings.Where(x => x.Target.UserName == request.Username)
+                .Select(u => u.Observer)
+                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+            break;
+        "following":
+            profiles = await _context.UserFollowings.Where(x => x.Observer.UserName == request.Username)
+                .Select(u => u.Target)
+                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+            break;
+    g) return the Result<List<Profiles.Profile>> with success method(). the arguement for the success method is the
+    variable from step e.
+
+    h) go to API/Controllers/FollowController.cs so we can add a new controller endpoint. add an HTTPGet with an username
+    parameter. then public async Task<IActionResult> GetFollowing(string username, string followAction). Then inside,
+        return HandlerResult with await Mediator.Send with a new list of Query{Username = username, 
+        FollowAction = followAction}
+         
+    i) test the endpoint using postman
+
+6) add the following property to the mapping config
+    - this task is to update the following property so that if we're logged in as Bob and Bob is following tom, then we 
+    want the following property to be set to  true.
+
+    a) Application/Core/MappingProfiles.cs  
+            add this at the start of the public MappingProfiles():
+                string currentUsername = null;
+
+    b) Application/Core/MappingProfiles.cs  
+        add this into the CreateMap<AppUser, Profiles.Profile>
+            .ForMember(d => d.Following, o => MapFrom(s => s.Following.Any(x => x.Observer.Username == currentUsername)))
+
+    c)  Application/Followers/List.cs
+        inject an additional dependency on the constructor of the Handler class:
+            IUserAccessor userAccessor 
+        dont forget to update the usings and to initial the new field parameter
+    
+    d) Application/Followers/List.cs
+        specify the new object for the .ProjectTo parameters by adding it inside the arguement (right next to the 
+        _mapper.ConfigurationProvider). 
+            new { currentUsername = _userAccessor.GetUsername() }
+
+    e) test this on Postman
+
+7) updating the other handlers with the folloing property
+
+8) add the UI for followers
+
+9 ) add methods to follow and unfollow
+
+10) make the follo button as a component
+
+11) get a list followings
+
+12) using mobx reactions
