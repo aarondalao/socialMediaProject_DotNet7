@@ -73,14 +73,14 @@ Major steps:
         inside the FirstOrDefaultAsync, either create a LAMBDA EXPRESSION or ANONYMOUS FUNCTIONS (can be as an arrow 
         function) containing the UserName from the Users context being compared equally to the userAccessors getUsername().
 
-        b) create another varable named target and use this variable to save :
+        b) create another variable named target and use this variable to save :
             an anonymous function containing your chosen variable containing a equality operation comparing the UserName
             from the _context.Users.FirstOrDefaultAsync to the requested TargetUsername.
         
         c) create an if statement with a condition comparing if the target is equal to null. if true, return null.
 
         d) attempt to get the following from the database by creating a variable (choose what you like). then the value of
-        the variable shoul contain the id of the observer (be careful here) and the id of target (be careful here) from 
+        the variable should contain the id of the observer (be careful here) and the id of target (be careful here) from 
         the UserFollowings table. you can access the table using the DataContext _context and using the findAsync method.
 
         e) create an if statement with a condition comparing if the following variable is equal to null. if true, create
@@ -90,7 +90,7 @@ Major steps:
             by accessing the _context.UserFollowings.remove method
 
         f) save the changes in the database by:
-                var success = _context.SaveChangesAsync() > 0;
+                var success = await _context.SaveChangesAsync() > 0;
         
         g) check if the success is actually successful by:
                 if(success) return Result<Unit>.Success(Unit.Value)
