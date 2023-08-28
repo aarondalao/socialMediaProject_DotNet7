@@ -27,17 +27,18 @@ Major steps:
             configure the new relationship on the OnModelCreating method:
 
                 builder.Entity<*THE_NEW_ENTITY*>(x => {
-                    b.HasKey(k=> new { k.ObserverId, k.TargetId } );
-                    b.HasOne(o => o.Observer)
+                    x.HasKey(k=> new { k.ObserverId, k.TargetId } );
+                    x.HasOne(o => o.Observer)
                         .WithMany(f => f.Followings)
                         .HasForeignKey(o => o.ObserverId)
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne(t => t.Target)
+                    x.HasOne(t => t.Target)
                         .WithMany(f => f.Followers)
                         .HasForeignKey(t => t.TargetId)
                         .OnDelete(DeleteBehavior.Cascade);    
                 });
+
     e) stop the dev server
 
     f) step back one folder in the directory then perform new migration via:
@@ -213,20 +214,341 @@ Major steps:
         dont forget to update the usings and to initial the new field parameter
     
     d) Application/Followers/List.cs
-        specify the new object for the .ProjectTo parameters by adding it inside the arguement (right next to the 
+        specify the new objects (FOLLOWERS AND FOLLOWING) for the .ProjectTo parameters by adding it inside the arguement (right next to the 
         _mapper.ConfigurationProvider). 
             new { currentUsername = _userAccessor.GetUsername() }
 
     e) test this on Postman
 
-7) updating the other handlers with the folloing property
+7) updating the other handlers with the following property
+    so far we've done is attaching a following data on the profiles of the AppUser. but it would be helpful to the 
+    client-side if we're also including a following on the attendees. here's what im going to do:
+        
+        a) Application/Activities/AttendeeDto.cs 
+
+            add these at the end of the Image property :
+
+                public bool Following {get;set;}
+                public int FollowersCount {get;set;}
+                public int FollowingCount {get;set;}
+
+        b) Application/Core/MappingProfiles.cs
+
+            update AttendeeDto object to include the new Following properties in the AttendeeDto:
+
+                .ForMember(d => FollowersCount, o => o.MapFrom(s => s.AppUser.Followers.Count))
+                .ForMember(d => FollowingCount, o => o.MapFrom(s => s.AppUser.Followings.Count))
+                .ForMember(d => Following, o => o.MapFrom(s => s.AppUser.Followers.Any(x => x.Observer.UserName == 
+                currentUsername)))
+
+        c) Application/Activities/List.cs
+
+            add the IUserAccessor accessor to the constructor of the Handler class (bring in the appropriate usings and 
+            dont forget to initialize field from parameter). from the var activities, add the new object(be careful, this
+            does NOT HAVE A TYPE SAFETY) at the .ProjectTo<ActivityDto> method by:
+
+                new { currentUsername = _userAccessor.GetUsername() }
+        
+        d) Application/Activities/Details.cs
+
+            remove unnecessary usings then repeat the same process at step c. 
+        
+        e) Application/Profiles/Details.cs 
+
+            remove unnecessary usings then repeat the same process at step c. 
+        
+        f) test the changes in Postman
 
 8) add the UI for followers
+    ah yes, front end yay!
+
+    a) client-app/src/app/models/profile.task
+        modify this file by introducing the new properties (follower, followingCount, followersCount) :
+
+            followersCount : number
+            followingCount : number
+            following : boolean
+    
+    b) make use of the new properties at the ActivityDetailedSidebar.tsx
+        find the tag :
+            <Item.Extra style={{color: "orange"}}> Following</Item.Extra>
+        then enclose this tag to do a conditional rendering if the host is following one or any of the attendees 
+        attending the event:
+
+            { attendee.following && <the_tag> }
+
+    c) client-app/src/features/activities/dashboard/ActivityListItemAttendee.tsx
+
+        a) add a border color( default is orange, pick whatever you like) to the attendee image to show if whether the particular
+        user (the logged in user) is following that particular user.
+
+        create a style inside the component:
+            const styles = {
+                borderColor: 'Orange',
+                borderWidth: 4
+            }
+        
+        b) modify the image tag by: 
+
+            * adding a bordered attribute
+            * add a style attribute with the value of a ternary operation of the attendee.following. if true, pass the 
+            styles variable that we just created, else, null.
+    
+    d) client-app/src/features/profiles/ProfileHeader.tsx 
+
+        change the following statistics (ei the numbers) by:
+
+            * on both of the statistic label, change the value attribute into a { profile.followers/FollowingCount }.
+
+    e) client-app/src/features/profiles/ProfileCard.tsx
+        add the {profile.followersCount} inside the <Card.Content> tag just after the <Icon> tag.
 
 9 ) add methods to follow and unfollow
 
-10) make the follo button as a component
+    a) client-app/src/app/api/agent.ts
+        add a method for following functionality by:
+            updateFollowing: (username : string) => request.post(`/follow/${username}`, {})
+
+    b)  update the attendee object that we currently have inside our registry when we change a following status by: 
+        go to client-app/src/app/stores/activityStore.ts then create a helper method to update the following status:
+
+            updateAttendeeFollowing = (username:string) => {
+                this.activityRegistry.foreach(activity => {
+                    activity.attendee.foreach(attendee => {
+                        if(attendee.username === username)
+                        {
+                            attendee.following ? attendee.followersCount-- : attendee.FollowersCount++;
+                            attendee.following = !attendee.following;
+                        }
+                    })
+                })
+            }
+
+    c) client-app/src/app/stores/profileStore.ts        
+        a) add a new property just after the export default class ProfileStore:
+            followings: Profile[] = [];
+
+        b) create a helper method to update the following insdie here:
+
+            updateFollowing = async (username: string, following: boolean) => {
+                this.loading = true;
+
+                try
+                {
+                    await agent.Profiles.updateFollowing(username);
+                    store.activityStore.updateAttendeeFollowing(username);
+
+                    runInAction(() => {
+                        if(this.profile && this.profile.username !== store.userStore.user?.username) {
+                            following ? this.profile.followersCount++ : this.profile.followersCount--;
+                            this.profile.following = !this.profile.following;
+                        }
+                        this.followings.forEach( profile => {
+                            if(profile.username === username) {
+                                profile.following ? profile.followersCount-- : profile.followersCount++;
+                                profile.following = !profile.following;
+                            }
+                        })
+
+                        this.loading = false;
+                    })
+                }
+                catch(error)
+                {
+                    console.log(error);
+                    runInAction(() => {
+                        this.loading = false;
+                    })
+                }
+            }
+
+10) make the follow button as a component
+    
+    a) client-app/src/app/profiles/ProfileHeader.tsx
+        take out/cut the <Reveal> tag block and all of its contents, and we'll paste it in the new file called 
+        FollowButton.tsx. this file will be inside the profiles folder.
+
+    b) add all the elements that we need to create an React component. (figure this one out yourself)
+
+    c) define your Props with an property of profile:Profile
+
+    d) on your component, dont forget to attach an observer for MobX and appling profile props for the parameter of 
+        the FollowButton Function
+
+    e) paste the copied tag block from step a to the return render. dont forget to add all missing imports
+
+    f) declare a const variable with a value of a destructured  profileStore and userStore from Store.ts. Also the
+    updateFollowing and loading from ProfileStore.ts
+
+    g) make an if statement where we'll compare the userStore.user?.username to the profile.username. if true, return 
+    null.
+
+    h) function handleFollow(e: SyntheticEvent, username: string) {
+        e.preventDefault();
+        profile.following ? updateFollowing(username, false) : updateFollowing(username , true);
+    }
+
+    h) under the first <Reveal.Content> tag, there is a button tag with a content. update that with the corresponding 
+        ternary operator for profile.following. for true, the rendered value should be a string of 'following' and for 
+        false, the rendered value should be a string of 'not Following.'
+
+    i) at the 2nd <Reveal.Content> tag, update the color attribute of the button by plugging in the profile.following 
+    object. then update the content attribute with the same object. then, add a loading flag with a value of loading
+    inside the button. finally, add an onClick event in the button with this logic:
+                {(e) => handleFollow(e,profile.username)}
+    
+    j) add the newly created button component at:
+        * ProfileHeader.tsx
+             <FollowButton profile={profile} />
+        * ProfileCard.tsx
+            <FollowButton profile={profile} />
+    
+    k) test the UI functionality 
 
 11) get a list followings
+        - final task is to get a list of followers and following to populate the content int the user's profile
+    
+    a) go to agent.ts file, then at the bottom of the updateFollowing method, add a new method called listFollowings 
+    with passed parameters as username of type string, and followAction with type string. after the arrow function, 
+    make a request.get with return type of list of Profiles so make that Profiles with an empty array.then use this as
+    the uri string so we can access this method:
+        
+        (`/follow/${username}?followAction=${followAction}`)
+    
+    b) go over to profileStore.ts. inside this, we can add another method to go and get the followings. name your new 
+    method as loadFollowings and make it asynchronous with a parameter of followAction with a type of string. dont forget
+    that this method is an arrow function.
+
+    since the loading flag property has been abused by profileStore, make a new loading flag for followings use only. we'll
+    name it as loadingFollowings with a type of boolean and an initial value of false. make sure that this new loadingFollowings 
+    property must be declared before the method!!!
+
+    use the newly created loadingFollowings the loadFollowing method and set it to true. then create a try catch block.
+    on the catch, create a variable error as a parameter and use a console.log with a arguement of error so we can display
+    the actual error message. after that get the runinAction utility to override the loadingFollowings into false again.
+
+    inside the try block, create a new const variable called whatever you want as long as its value is an await 
+    agent.Profiles.listFollowings(this.profile!.username, followAction); after this, use a runInAction utility again so
+    we can set our observers. define it as :
+
+        this.followings = followings;
+        this.loadingFollowings = false;
+
+    c) on this directory (client-app/src/features/profiles/) , create a new Component file called ProfileFollowings. Then
+    fill out the boilerplate for creating a new component with an observer (you should know this by know). we need to access
+    our profile store so define a new const variable called {profileStore} with a value of useStore(). next we'll need to 
+    destructure profileStore so we can use profileStore's methods and properties. we need profile. followings, loadFollowings,
+    loadingFollowings.
+
+    d) this will be our returned ui render for the ProfileFollowings.tsx:
+        (
+            note:
+                on the header tag, we'll replace the value of the content later on for more logical solution. for now this 
+                will do.
+        )
+        <Tab.Pane loading={loadingFollowings}> 
+            <Grid>
+                <Grid.Column width={16}> 
+                    <Header floated'left icon='user' content={`People following ${profile.displayName}`}/>
+                </Grid.Column>
+                <Grid.Column width={16}> 
+                    <Card.Group itemsPerRow={4}>
+                        { followings.map(profile => (
+                            <ProfileCard key={profile.username} profile={profile}/>
+                        ))}
+                    </Card.Group>
+                </Grid.Column>
+            </Grid>
+        </Tab.Pane>
+
+    e) just after the const variable declarations: create an useEffect by:
+
+        useEffect(() => {
+            loadFollowings('following');
+        }, [loadFollowings])
+
+        take note that the passed argument at the loadFollowings method is HARDCODED. this will be change for a smarter
+        way of switching following to follower.
+    
+    f) on the ProfileContent.tsx, updat both of the pane for the following/follower by:
+
+        {menuItem: 'Followers' =, render: () => <ProfileFollowings />}
+        {menuItem: 'Following' =, render: () => <ProfileFollowings />}
+
+    g) test the changes in the local dev. note that the followers menu item only works, not the following
 
 12) using mobx reactions
+        - on this last guide, we need to load up the followers or followings depending on which one of these tabs is 
+        clicked.
+        
+        a) on the profileStore.ts, make a MobX Reaction. here's how to make a Reaction:
+            * add another property called activeTab with a value of zero
+            * inside the constructor, define your reaction by typing reaction() just belows the makeAutoObservable(this);
+             then inside the open close parenthesis make a callback function with this.activeTab then comma, then 
+             activeTab with an arrow function like this:
+                    () => this.activeTab, activeTab => {
+
+                    }
+            * inside this squigly brackets, make an if statement comparing activeTab whether it is equal to 3 or 4. inside
+             this if statement, create a new variable called followAction with a value of a ternary operation of:
+
+                activeTab === 3 ? 'followers' : 'following';
+
+             after this ternary operation, pass down the followAction to this.loadFollowing(). also add an else statement
+             with this.followings = [];
+        
+        b) just after the constructor, create a function called setActiveTab with a passed parameter of activeTab which
+        is a type of any. this function will contain the this.activeTab = activeTab;
+
+        c) go to ProfileContent.tsx, add the profileStore by:
+
+            const { profileStore } = useStore();
+
+        then modify the return render by adding more property in the tab tag:
+
+            <Tab 
+                ...
+                ...
+                ...
+                onTabChange={(e, data) => profileStore.setActiveTab(data.activeIndex)} 
+            />
+
+        after completing this changes, remove the useEffect from ProfileFollowings.tsx file (can refer to step 11E(get 
+        the list of followings) ) and update the destructured profileStore by removing the loadFollowings and remove the
+        useEffect import from react. 
+        
+        d) In ProfilePage.tsx, we have to reset the active back to zero using the useEffect hook. in order for us to do
+        this, first is we need to add the setActiveTab method inside the destructured properties that i'm getting from 
+        profileStore. then we'll use a cleanup function so that when this component is disposed, we can reset the activeTab
+        in the profileStore:
+
+            * create a return with callback function inside the useEffect hook of the ProfilePage.tsx, then set the 
+            setActiveTab to zero.
+
+                    return () => {
+                        setActiveTab(0)
+                    }
+
+        e) in the ProfileFollowings.tsx, modify the content attribute of the header tag by:
+            * in the destructured properties of the profileStore, add on the activeTab property.
+            * change the value of the content attribute of the header tag :
+                content={activeTab === 3 ? `People following ${profile?.displayName}` 
+                    : `People ${profile?.displayName} is following`} 
+
+        f) this step fixes the following statistics not updating properly when we're looking at a different user. Go to 
+        profileStore.ts and at the updateFollowing 
+        method, go and have a look at the runInAction. in the if statement, we only want to update this profile if the
+        profile username is not equal to the currently logged in username and i'ts not equal to the username that we're 
+        attempting to use (the username parameter that is passed to the updateFollowing method). so add another condition 
+        to the if statement:
+
+            if(... && ... !== ... && this.profile.username === username)
+
+        this will prevent the profile from updating when we're looking at another user's profile, but tring to follow a 
+        different user.
+
+        add another if statement after the if statement that we just updated:
+
+            if(this.profile && this.profile.username === store.userStore.user?.username){
+                following ? this.profile.followingCount++ : this.profile.followingCount--;
+            }
