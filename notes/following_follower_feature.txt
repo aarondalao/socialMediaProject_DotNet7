@@ -162,11 +162,11 @@ Major steps:
 
     b) this query will contain a properties of public string Username and public string FollowAction
 
-    c) outside the query, create a class for the Handler deriving IRequestHandler<Query, Result<List<Profiles.Profile>>>. then implement
-        the interface. attach the asynchronous flag for the Handler class.
+    c) outside the query, create a class for the Handler deriving IRequestHandler<Query, Result<List<Profiles.Profile>>>. 
+    then implement the interface. attach the asynchronous flag for the Handler class.
 
     d) generate a constructor for the Handler class with the parameters of DataContext context  to access the database 
-    and IMapper mapper to shape our data into json format. after this, add all necessary usings for us to use these two
+    ,IMapper mapper to shape our data into json format, and IUserAccessor userAccessor. after this, add all necessary usings for us to use these two
     Handler dependencies. then, initialize field from parameter and modify these fields from this.**YOUR_FIELD** into 
     _**YOUR_FIELD**. DONT FORGET TO MODIFY THE PROFILE AT THE TASK<Result<LIST<PROFILE>>> INTO <PROFILES.PROFILE>
 
@@ -177,13 +177,13 @@ Major steps:
         "followers":
             profiles = await _context.UserFollowings.Where(x => x.Target.UserName == request.Username)
                 .Select(u => u.Observer)
-                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider, new {currentUsername = userAccessor.GetUsername()})
                 .ToListAsync();
             break;
         "following":
             profiles = await _context.UserFollowings.Where(x => x.Observer.UserName == request.Username)
                 .Select(u => u.Target)
-                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider)
+                .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider, new {currentUsername = userAccessor.GetUsername()})
                 .ToListAsync();
             break;
     g) return the Result<List<Profiles.Profile>> with success method(). the arguement for the success method is the
