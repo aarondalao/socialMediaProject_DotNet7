@@ -27,7 +27,7 @@ Major steps:
             configure the new relationship on the OnModelCreating method:
 
                 builder.Entity<*THE_NEW_ENTITY*>(x => {
-                    x.HasKey(k=> new { k.ObserverId, k.TargetId } );
+                    x.HasKey(k => new { k.ObserverId, k.TargetId } );
                     x.HasOne(o => o.Observer)
                         .WithMany(f => f.Followings)
                         .HasForeignKey(o => o.ObserverId)
@@ -206,7 +206,7 @@ Major steps:
 
     b) Application/Core/MappingProfiles.cs  
         add this into the CreateMap<AppUser, Profiles.Profile>
-            .ForMember(d => d.Following, o => MapFrom(s => s.Following.Any(x => x.Observer.Username == currentUsername)))
+            .ForMember(d => d.Following, o => MapFrom(s => s.Followers.Any(x => x.Observer.Username == currentUsername)))
 
     c)  Application/Followers/List.cs
         inject an additional dependency on the constructor of the Handler class:
