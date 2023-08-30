@@ -47,7 +47,9 @@ namespace Persistence
 
             // added 28/08/23
             builder.Entity<UserFollowings>(x => {
+
                 x.HasKey(k => new { k.ObserverId, k.TargetId });
+                
                 x.HasOne(o => o.Observer)
                     .WithMany(f => f.Followings)
                     .HasForeignKey(o => o.ObserverId)
