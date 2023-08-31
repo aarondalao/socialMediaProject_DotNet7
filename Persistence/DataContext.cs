@@ -45,6 +45,7 @@ namespace Persistence
             .WithMany(c => c.Comments)
             .OnDelete(DeleteBehavior.Cascade);
 
+
             builder.Entity<UserFollowing>(x => {
                 
                 x.HasKey(k => new {k.ObserverId, k.TargetId});
@@ -53,13 +54,12 @@ namespace Persistence
                     .WithMany(f => f.Followings)
                     .HasForeignKey(o => o.ObserverId)
                     .OnDelete(DeleteBehavior.Cascade);
-                
+
                 x.HasOne(t => t.Target)
                     .WithMany(f => f.Followers)
                     .HasForeignKey(t => t.TargetId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-
         }
     }
 }

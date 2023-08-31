@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -10,9 +11,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230828115620_FollowingEntityAdded")]
+    partial class FollowingEntityAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
@@ -185,8 +188,7 @@ namespace Persistence.Migrations
                     b.ToTable("Photos");
                 });
 
-            modelBuilder.Entity("Domain.UserFollowing", b =>
-
+            modelBuilder.Entity("Domain.UserFollowings", b =>
                 {
                     b.Property<string>("ObserverId")
                         .HasColumnType("TEXT");
@@ -371,9 +373,7 @@ namespace Persistence.Migrations
                         .HasForeignKey("AppUserId");
                 });
 
-
-            modelBuilder.Entity("Domain.UserFollowing", b =>
-
+            modelBuilder.Entity("Domain.UserFollowings", b =>
                 {
                     b.HasOne("Domain.AppUser", "Observer")
                         .WithMany("Followings")
