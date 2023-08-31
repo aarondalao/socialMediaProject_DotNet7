@@ -3,15 +3,15 @@ notes:
 
 
 Learning goal:
-* implement the following feature from end to end
-* self referencing many to many relationship
+* Implement the following feature from end to end
+* Self-referencing many-to-many relationship
 
 Major steps:
 
 1) Adding join Entity
 
-    a) create new join entity named UserFollowings in Domain Directory
-    b) props are as follows:
+    a) Create new join entity named UserFollowing in Domain Directory
+    b) Props are as follows:
             public access modifier 
             string ObserverId
             AppUser Observer
@@ -21,7 +21,7 @@ Major steps:
             add 2 new properties named followers and followees:
                 public ICollection<UserFollowing> Followings
                 public ICollection<UserFollowing> Followers
-    d) configure the new relationship in the DataContext.cs
+    d) Configure the new relationship in the DataContext.cs
             just after the constructor:
                 public DbSet<*THE_NEW_ENTITY*>  UserFollowings
             configure the new relationship on the OnModelCreating method:
