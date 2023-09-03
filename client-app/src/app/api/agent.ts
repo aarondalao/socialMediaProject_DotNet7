@@ -3,8 +3,6 @@
 
     this handles requests to be fetched by the controller api, 
     and the error handling being thrown by the controller api
-
-    
 */ 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Activity, ActivityFormValues } from '../models/activity';
@@ -119,7 +117,10 @@ const Profiles = {
     },
     setMainPhoto: (id:string) => requests.post(`/photos/${id}/setMain`,{}),
     deletePhoto: (id:string) => requests.del(`/photos/${id}`),
-    updateProfile: (profile: Partial<Profile>) => requests.put(`/profiles`,profile)
+    updateProfile: (profile: Partial<Profile>) => requests.put(`/profiles`,profile),
+    updateFollowing: (username: string) => requests.post(`/follow/${username}`,{}),
+    listFollowings: (username: string, followAction: string) => 
+        requests.get<Profile[]>(`follow/${username}?followAction=${followAction}`) 
 }
 
 const agent = {
