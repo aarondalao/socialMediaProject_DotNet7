@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Application.Activities;
 using Application.Comments;
 using AutoMapper;
@@ -9,6 +10,8 @@ namespace Application.Core
     {
         public MappingProfiles()
         {
+            string currentUsername = null;
+
             CreateMap<Activity, Activity>();
             CreateMap<Activity, ActivityDto>()
             .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees
@@ -23,8 +26,9 @@ namespace Application.Core
                 .MapFrom(s => s.Photos
                     .FirstOrDefault(x => x.isMain).Url))
             .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
-            .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count));
-            
+            .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count))
+            .ForMember(d => d.IsFollowing, o => o.MapFrom(s => s.Followers.Any(x => x.Observer.UserName == currentUsername)));
+
             CreateMap<Comment,CommentDto>()
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DisplayName))
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.Author.UserName))
