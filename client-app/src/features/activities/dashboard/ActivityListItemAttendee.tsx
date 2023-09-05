@@ -12,6 +12,12 @@ interface Props {
 export default observer(function ActivityListItemAttendee({
   attendees,
 }: Props) {
+
+  const styles = {
+    borderColor: '#32CD32',
+    borderWidth: 4
+  };
+
   return (
     <List horizontal>
       {attendees.map((attendee) => (
@@ -27,6 +33,8 @@ export default observer(function ActivityListItemAttendee({
               <Image
                 size="mini"
                 circular
+                bordered
+                style={ attendee.isFollowing ? styles : null}
                 src={attendee.image || "/assets/user.png"}
               />
             </List.Item>
@@ -35,7 +43,6 @@ export default observer(function ActivityListItemAttendee({
           <Popup.Content>
             <ProfileCard profile={attendee}/>
           </Popup.Content>
-
         </Popup>
       ))}
     </List>
