@@ -1,4 +1,5 @@
 using Application.Activities;
+using Application.Core;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,13 @@ namespace API.Controllers
         // api/activities
         // get the list of Activities 
         [HttpGet] 
-        public async Task<IActionResult> GetActivities(){
-            return HandleResult( await Mediator.Send(new List.Query())); 
+
+        // updated :5/9/2023
+        // need to take these parameters from the query string and when we're receiving the query string parameters 
+        // inside the object, we need to give our API controller a hint on where to find these parameters. so add
+        // the FromQuery attribute with the PagingParams class
+        public async Task<IActionResult> GetActivities([FromQuery]PagingParams parameter){
+            return HandleResult( await Mediator.Send(new List.Query{Params = parameter})); 
         }
 
          // api/activities/{id}
