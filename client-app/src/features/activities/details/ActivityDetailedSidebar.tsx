@@ -16,6 +16,8 @@ export default observer(function ActivityDetailedSidebar({
   activity: { attendees, host },
 }: Props) {
   if (!attendees) return null;
+
+  
   return (
     <>
       <Segment
@@ -48,7 +50,9 @@ export default observer(function ActivityDetailedSidebar({
                     {attendee.displayName}
                   </Link>
                 </Item.Header>
-                <Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
+                { attendee.isFollowing && (
+                  <Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
+                )}
               </Item.Content>
             </Item>
           ))}
