@@ -19,7 +19,7 @@ namespace Application.Activities
     {
         public class Query : IRequest<Result<PagedList<ActivityDto>>>
         {
-            public PagingParams Params { get; set; }
+            public ActivityParams Params { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDto>>>
@@ -64,21 +64,26 @@ namespace Application.Activities
                 // this will defer the query of getting the current username from the 
                 // database until we create a paged list
                 var query = _context.Activities
+                    .Where(d => d.Date >= request.Params.StartDate)
                     .OrderBy(d => d.Date)
                     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
                     .AsQueryable();
 
-                // not needed if using .ProjectTo()
-                // var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
+                if (request.Params.IsGoing && !request.Params.IsHost)
+                {
+                    query = query.Where(x => x.Attendees.Any(a => a.Username == _userAccessor.GetUsername()));
+                }
 
-
-                // return Result<PagedList<ActivityDto>>.Success(activities);
+                if (request.Params.IsHost && !request.Params.IsGoing)
+                {
+                    query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
+                }
 
                 // updated 5/9/2023
                 // need to return a new paged list here so we need to create the CreateAsync method with the needed
                 // parameters ( the query, the page number, and the page size from the PagingParams)
                 return Result<PagedList<ActivityDto>>.Success(
-                    await PagedList<ActivityDto>.CreateAsync(query, request.Params.PageNumber, 
+                    await PagedList<ActivityDto>.CreateAsync(query, request.Params.PageNumber,
                         request.Params.PageSize));
             }
         }
