@@ -3,7 +3,6 @@
     * answers a question/request
     * does not modify state
     * Should always return value
-
 */
 using Application.Core;
 using Application.Interfaces;
@@ -18,8 +17,6 @@ namespace Application.Activities
 {
     public class List
     {
-
-
         public class Query : IRequest<Result<PagedList<ActivityDto>>>
         {
             public PagingParams Params { get; set; }
@@ -59,20 +56,29 @@ namespace Application.Activities
                 // ProjectTo method will get the necessary datafields that are specified in the mapping config
                 // and use that to create a query.
 
-                // updated 6/9/2023
-                // made this as a queryable to defer the execution of this line
+                // var activities = await _context.Activities
+                //     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
+                //     .ToListAsync(cancellationToken);
+
+                // updated: 5/9/2023
+                // this will defer the query of getting the current username from the 
+                // database until we create a paged list
                 var query = _context.Activities
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, 
-                        new { currentUsername = _userAccessor.GetUsername() })
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
                     .AsQueryable();
 
                 // not needed if using .ProjectTo()
                 // var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
 
+
+                // return Result<PagedList<ActivityDto>>.Success(activities);
+
+                // updated 5/9/2023
+                // need to return a new paged list here so we need to create the CreateAsync method with the needed
+                // parameters ( the query, the page number, and the page size from the PagingParams)
                 return Result<PagedList<ActivityDto>>.Success(
                     await PagedList<ActivityDto>.CreateAsync(query, request.Params.PageNumber, 
-                        request.Params.PageSize)
-                );
+                        request.Params.PageSize));
             }
         }
     }
