@@ -55,6 +55,7 @@ namespace Application.Activities
 
                 // ProjectTo method will get the necessary datafields that are specified in the mapping config
                 // and use that to create a query.
+
                 // var activities = await _context.Activities
                 //     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
                 //     .ToListAsync(cancellationToken);
@@ -68,6 +69,7 @@ namespace Application.Activities
 
                 // not needed if using .ProjectTo()
                 // var activitiesToReturn = _mapper.Map<List<ActivityDto>>(activities);
+
 
                 // return Result<PagedList<ActivityDto>>.Success(activities);
 
