@@ -6,6 +6,7 @@ import agent from "../api/agent";
 import { v4 as uuid } from 'uuid';
 import { store } from "./store";
 import { Profile } from "../models/profile";
+import { Pagination } from "../models/pagination";
 
 export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
@@ -14,6 +15,8 @@ export default class ActivityStore {
     editMode = false;
     loading = false;
     loadingInitial = false;
+    pagination: Pagination | null = null;
+
 
     constructor() {
         makeAutoObservable(this)
@@ -34,22 +37,29 @@ export default class ActivityStore {
         )
     }
 
-    // get all activities
+    // get all activities. edited 6/9/2023
     loadActivities = async () => {
         this.setLoadingInitial(true);
         try {
             // activities from API
-            const activities = await agent.Activities.list();
+            const result = await agent.Activities.list();
 
-            activities.forEach(activity => {
+            result.data.forEach(activity => {
                 this.setActivity(activity);
             })
+            this.setPagination(result.pagination);
             this.setLoadingInitial(false);
         } catch (error) {
             console.log(error);
             this.setLoadingInitial(false);
         }
     }
+
+    // set pagination
+    setPagination = (pagination : Pagination) => {
+        this.pagination = pagination;
+    }
+
 
     // either get a single activity from memory or from the API
     loadActivity = async (id: string) => {

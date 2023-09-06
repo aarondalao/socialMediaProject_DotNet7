@@ -16,7 +16,7 @@ namespace API.Controllers
         // inside the object, we need to give our API controller a hint on where to find these parameters. so add
         // the FromQuery attribute with the PagingParams class
         public async Task<IActionResult> GetActivities([FromQuery]PagingParams parameter){
-            return HandleResult( await Mediator.Send(new List.Query{Params = parameter})); 
+            return HandlePagedResult( await Mediator.Send(new List.Query{Params = parameter})); 
         }
 
          // api/activities/{id}

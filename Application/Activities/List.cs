@@ -64,6 +64,7 @@ namespace Application.Activities
                 // this will defer the query of getting the current username from the 
                 // database until we create a paged list
                 var query = _context.Activities
+                    .OrderBy(d => d.Date)
                     .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
                     .AsQueryable();
 
