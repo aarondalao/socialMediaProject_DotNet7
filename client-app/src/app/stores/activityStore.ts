@@ -6,7 +6,7 @@ import agent from "../api/agent";
 import { v4 as uuid } from 'uuid';
 import { store } from "./store";
 import { Profile } from "../models/profile";
-import { Pagination } from "../models/pagination";
+import { Pagination, PagingParams } from "../models/pagination";
 
 export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
@@ -16,10 +16,22 @@ export default class ActivityStore {
     loading = false;
     loadingInitial = false;
     pagination: Pagination | null = null;
+    pagingParameters = new PagingParams();
 
 
     constructor() {
         makeAutoObservable(this)
+    }
+
+    setPagingParameters = (pagingParameters: PagingParams) => {
+        this.pagingParameters = pagingParameters;
+    }
+
+    get axiosParameters () {
+        const params = new URLSearchParams();
+        params.append('pageNumber', this.pagingParameters.pageNumber.toString());
+        params.append('pageSize', this.pagingParameters.pageSize.toString());
+        return params;
     }
 
     get activitiesByDate() {
@@ -42,7 +54,7 @@ export default class ActivityStore {
         this.setLoadingInitial(true);
         try {
             // activities from API
-            const result = await agent.Activities.list();
+            const result = await agent.Activities.list(this.axiosParameters);
 
             result.data.forEach(activity => {
                 this.setActivity(activity);
