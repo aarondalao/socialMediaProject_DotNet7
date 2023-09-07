@@ -1,6 +1,6 @@
 // import { action, makeAutoObservable, makeObservable, observable } from "mobx";
 
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { Activity, ActivityFormValues } from "../models/activity";
 import agent from "../api/agent";
 import { v4 as uuid } from 'uuid';
@@ -17,20 +17,68 @@ export default class ActivityStore {
     loadingInitial = false;
     pagination: Pagination | null = null;
     pagingParameters = new PagingParams();
+    filterActions = new Map().set('all', true);
 
 
     constructor() {
         makeAutoObservable(this)
+
+        reaction(
+            () => this.filterActions.keys(),
+            () => {
+                this.pagingParameters = new PagingParams();
+                this.activityRegistry.clear();
+                this.loadActivities();
+            }
+        );
     }
 
     setPagingParameters = (pagingParameters: PagingParams) => {
         this.pagingParameters = pagingParameters;
     }
 
+    setFilters = ( filterAction: string, filterValue: string | Date) => {
+        const resetFilterActions = () => {
+            this.filterActions.forEach((value, key) => {
+                if(key !== 'startDate') this.filterActions.delete(key);
+            })
+        }
+        switch (filterAction)
+        {
+            case 'all':
+                resetFilterActions();
+                this.filterActions.set('all', true);
+                break;
+            case 'isGoing':
+                resetFilterActions();
+                this.filterActions.set('isGoing', true);
+                break;
+            case 'isHost':
+                resetFilterActions();
+                this.filterActions.set('isHost', true);
+                break;
+            case 'startDate':
+                this.filterActions.delete('startDate');
+                this.filterActions.set('startDate', filterValue);
+        }
+    }
+
+    // this modifies the headers needed to either filter or to paginate the activities
     get axiosParameters () {
         const params = new URLSearchParams();
         params.append('pageNumber', this.pagingParameters.pageNumber.toString());
         params.append('pageSize', this.pagingParameters.pageSize.toString());
+        
+
+        this.filterActions.forEach((value,key) => {
+            if(key === 'startDate') {
+                params.append(key, (value as Date).toISOString())
+            }
+            else{
+                params.append(key,value);
+            }
+        })
+
         return params;
     }
 
