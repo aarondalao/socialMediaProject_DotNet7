@@ -53,7 +53,7 @@ This solution will be using the following:
 - [date-fns](https://date-fns.org/docs/Getting-Started) - JavaScript date object manipulator 
 - [react-dropzone](https://github.com/react-dropzone/react-dropzone) - simple drag-and-drop image/file uploader for react hooks
 - [react-cropper](https://github.com/react-cropper/react-cropper) - Cropperjs as React component
-
+- [react-infinite-scroller](https://www.npmjs.com/package/react-infinite-scroller) - lightweight implementation of infinte scroller to load grid or list of items.
 
 
 ### TODOs
