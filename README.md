@@ -10,14 +10,18 @@ A Social media platform and brief Personal Portfolio Project using .Net 7 and Re
 
 ## API Layer | solution
 Dependent on the Application layer, contains the startup project and the controller of the whole project. 
-- [Microsoft.EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) - Shared design-time components for Entity Framework Core tools.
+- [Microsoft.EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) - 
+Shared design-time components for Entity Framework Core tools.
 - CORS - cross-origin resource sharing
 
 ## Application Layer | solution
 Dependent on Domain solution. these were the services used in this solution:
-- [Mediatr](https://www.nuget.org/packages/MediatR#readme-body-tab) -  a solid implementation of Mediator pattern with CQRS (Command and Query Responsibility Segregation)
-- [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) - converter of an object into another
-- [FluentValidation](https://docs.fluentvalidation.net/en/latest/aspnet.html) - will be used as my validator on the incoming Mediatr requests. NOTE: AUTOMATIC Validation is being used.
+- [Mediatr](https://www.nuget.org/packages/MediatR#readme-body-tab) -  a solid implementation of Mediator pattern with 
+CQRS (Command and Query Responsibility Segregation)
+- [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) - converter of an 
+object into another
+- [FluentValidation](https://docs.fluentvalidation.net/en/latest/aspnet.html) - will be used as my validator on the 
+incoming Mediatr requests. NOTE: AUTOMATIC Validation is being used.
 - [Asp.Net Identity Core](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-7.0&tabs=visual-studio) - Authentication management
 
 ## Domain Layer | Solution
@@ -42,6 +46,8 @@ new solution with purpose of getting username via IUserAccessor.cs and image via
 This solution will be using the following:
 - [React](https://react.dev/reference/react) - main Frontend Library for creating components
 - [Typescript](https://www.typescriptlang.org/docs/) - safe and stricter type checking
+- [Vite](https://v3.vitejs.dev/) - A much better Frontend tooling, performance-wise to replace Create-React-App, which 
+    is abandoned as of the 1st quarter of 2023.
 - [Semantic UI](https://semantic-ui.com/introduction/getting-started.html) - used for faster prototyping of CSS files
 - [Axios](https://axios-http.com/docs/intro) - HTTP API fetching 
 - [MobX](https://mobx.js.org/react-integration.html) - for state management 
