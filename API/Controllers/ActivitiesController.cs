@@ -1,5 +1,6 @@
 using Application.Activities;
 using Application.Core;
+using Application.Profiles;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace API.Controllers
          // get an activity
         [HttpGet("{id}")]
         public async Task<IActionResult> GetActivity(Guid id){    
-            return HandleResult(await Mediator.Send(new Details.Query{Id = id}));
+            return HandleResult(await Mediator.Send(new Application.Activities.Details.Query{Id = id}));
         }
 
         // api/activities/
@@ -38,7 +39,7 @@ namespace API.Controllers
         public async Task<IActionResult> EditActivity(Guid Id, Activity activity){
             activity.Id  = Id;
 
-            return HandleResult(await Mediator.Send(new Edit.Command{Activity = activity}));
+            return HandleResult(await Mediator.Send(new Application.Activities.Edit.Command{Activity = activity}));
         }
 
         // api/activities/{id}

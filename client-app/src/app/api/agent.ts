@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { User, UserFormValues } from '../models/User';
-import { Photo, Profile } from '../models/profile';
+import { Photo, Profile, UserActivity } from '../models/profile';
 import { PaginatedResult } from '../models/pagination';
 
 const sleep = (delay: number) => {
@@ -131,7 +131,10 @@ const Profiles = {
     deletePhoto: (id:string) => requests.del(`/photos/${id}`),
     updateProfile: (profile: Partial<Profile>) => requests.put(`/profiles`,profile),
     updateFollowing: (username : string) => requests.post(`/follow/${username}`, {}),
-    listFollowing: (username:string, followAction: string) => requests.get<Profile[]>(`/follow/${username}?followAction=${followAction}`)
+    listFollowing: (username:string, followAction: string) => 
+        requests.get<Profile[]>(`/follow/${username}?followAction=${followAction}`),
+    listUserActivities: (username: string, eventConditions: string) =>
+        requests.get<UserActivity[]>(`profiles/${username}/activities?eventConditions=${eventConditions}`)
 }
 
 const agent = {
