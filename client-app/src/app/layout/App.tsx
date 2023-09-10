@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { Container } from "semantic-ui-react";
 import NavBar from "./navBar";
 import { observer } from "mobx-react-lite";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import Homepage from "../../features/home/Homepage";
 import { ToastContainer } from "react-toastify";
 import { useStore } from "../stores/store";
@@ -29,6 +29,7 @@ function App() {
 
   return (
     <Fragment>
+      <ScrollRestoration/>
       <ModalContainer />
       <ToastContainer position="bottom-right" theme="colored" />
       {location.pathname === "/" ? (
@@ -37,6 +38,7 @@ function App() {
         <Fragment>
           <NavBar />
           <Container style={{ marginTop: "7em" }}>
+            
             <Outlet />
           </Container>
         </Fragment>
