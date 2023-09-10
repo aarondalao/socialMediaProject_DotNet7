@@ -11,21 +11,19 @@ export default class UserStore {
         makeAutoObservable(this);
     }
 
-    get isLoggedIn(){
+    get isLoggedIn() {
         return !!this.user
     }
 
     login = async (credentials: UserFormValues) => {
-        try{
-            const user = await agent.Account.login(credentials);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            router.navigate('/activities');
-            store.modalStore.closeModal();
-        }
-        catch(error){
-            throw error;
-        }
+
+        const user = await agent.Account.login(credentials);
+        store.commonStore.setToken(user.token);
+        runInAction(() => this.user = user);
+        router.navigate('/activities');
+        store.modalStore.closeModal();
+
+
     }
 
     logout = () => {
@@ -35,34 +33,29 @@ export default class UserStore {
     }
 
     getUser = async () => {
-        try{
+        try {
             const user = await agent.Account.current();
             runInAction(() => {
                 this.user = user;
             });
-        }catch(error){
+        } catch (error) {
             console.log(error);
         }
     }
 
     register = async (credentials: UserFormValues) => {
-        try{
-            const user = await agent.Account.register(credentials);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            router.navigate('/activities');
-            store.modalStore.closeModal();
-        }
-        catch(error){
-            throw error;
-        }
+        const user = await agent.Account.register(credentials);
+        store.commonStore.setToken(user.token);
+        runInAction(() => this.user = user);
+        router.navigate('/activities');
+        store.modalStore.closeModal();
     }
 
-    setImage = (image:string) => {
-        if(this.user) this.user.image = image;
+    setImage = (image: string) => {
+        if (this.user) this.user.image = image;
     }
 
     setDisplayName = (dName: string) => {
-        if(this.user) this.user.displayName = dName;
+        if (this.user) this.user.displayName = dName;
     }
 }

@@ -6,7 +6,6 @@ import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import TestErrors from "../../features/errors/TestError";
 import NotFound from "../../features/errors/NotFound";
 import ServerError from "../../features/errors/ServerError";
-import LoginForm from "../../features/users/LoginForm"; // <-- old version. new version uses modals
 import ProfilePage from "../../features/profiles/ProfilePage";
 import RequireAuth from "./RequireAuth";
 
