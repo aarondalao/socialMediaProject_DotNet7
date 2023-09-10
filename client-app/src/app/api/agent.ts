@@ -42,7 +42,7 @@ axios.interceptors.response.use(async response => {
     const pagination = response.headers["pagination"];
     if (pagination) {
         response.data = new PaginatedResult(response.data, JSON.parse(pagination));
-        return response as AxiosResponse<PaginatedResult<any>>
+        return response as AxiosResponse<PaginatedResult<unknown>>
     }
 
     return response;
@@ -55,7 +55,8 @@ axios.interceptors.response.use(async response => {
         case 400:
 
             // check if what we're getting is a get request
-            if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
+            if (config.method === 'get' && 
+                Object.prototype.hasOwnProperty.call(data.errors, 'id')) {
                 router.navigate('not-found');
             }
 
@@ -98,8 +99,8 @@ axios.interceptors.response.use(async response => {
 
 const requests = {
     get: <Type>(url: string) => axios.get<Type>(url).then(responseBody),
-    post: <Type>(url: string, body: {}) => axios.post<Type>(url, body).then(responseBody),
-    put: <Type>(url: string, body: {}) => axios.put<Type>(url, body).then(responseBody),
+    post: <Type>(url: string, body: object) => axios.post<Type>(url, body).then(responseBody),
+    put: <Type>(url: string, body: object) => axios.put<Type>(url, body).then(responseBody),
     del: <Type>(url: string) => axios.delete<Type>(url).then(responseBody),
 }
 
@@ -124,7 +125,7 @@ const Account = {
 const Profiles = {
     get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
     uploadPhoto: (file: Blob) => {
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append('File', file);
         return axios.post<Photo>('photos', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }

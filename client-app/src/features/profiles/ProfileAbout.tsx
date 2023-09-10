@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import react, { useState } from "react";
+import { useState } from "react";
 import { useStore } from "../../app/stores/store";
 import { Button, Grid, Header, Tab } from "semantic-ui-react";
 import ProfileEdit from "./ProfileEdit";
@@ -35,3 +35,4 @@ export default observer(function ProfileAbout() {
     </Tab.Pane>
   );
 });
+``

@@ -39,7 +39,7 @@ export default class ActivityStore {
 
     setFilters = ( filterAction: string, filterValue: string | Date) => {
         const resetFilterActions = () => {
-            this.filterActions.forEach((value, key) => {
+            this.filterActions.forEach(( _ , key) => {
                 if(key !== 'startDate') this.filterActions.delete(key);
             })
         }
@@ -201,7 +201,7 @@ export default class ActivityStore {
                 // this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
 
                 if(activity.id) {
-                    let updatedActivity = {...this.getActivity(activity.id), ...activity}
+                    const updatedActivity = {...this.getActivity(activity.id), ...activity}
                     this.activityRegistry.set(activity.id, updatedActivity as Activity);
                     this.selectedActivity = updatedActivity as Activity;
                 }
