@@ -78,7 +78,7 @@ namespace Application.Activities
                 {
                     query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
                 }
-
+                
                 // updated 5/9/2023
                 // need to return a new paged list here so we need to create the CreateAsync method with the needed
                 // parameters ( the query, the page number, and the page size from the PagingParams)

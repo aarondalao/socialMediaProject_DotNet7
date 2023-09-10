@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Photo, Profile } from "../models/profile";
+import { Photo, Profile, UserActivity } from "../models/profile";
 import { store } from "./store";
 
 export default class ProfileStore {
@@ -11,6 +11,8 @@ export default class ProfileStore {
     followings: Profile[] = [];
     loadingFollowings = false;
     activeTab = 0;
+    userActivities: UserActivity[] = [];
+    loadingActivities = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -18,20 +20,18 @@ export default class ProfileStore {
         reaction(
             () => this.activeTab,
             activeTab => {
-                if(activeTab === 3 || activeTab === 4)
-                {
+                if (activeTab === 3 || activeTab === 4) {
                     const followAction = activeTab === 3 ? 'followers' : 'following';
                     this.loadFollowings(followAction);
                 }
-                else
-                {
+                else {
                     this.followings = [];
                 }
             }
         );
     }
 
-    setActiveTab = (activeTab: any ) => {
+    setActiveTab = (activeTab: any) => {
         this.activeTab = activeTab;
     }
 
@@ -133,11 +133,11 @@ export default class ProfileStore {
             await agent.Profiles.updateProfile(profile);
 
             runInAction(() => {
-                if(profile.displayName && profile.displayName !== store.userStore.user?.displayName){
+                if (profile.displayName && profile.displayName !== store.userStore.user?.displayName) {
                     store.userStore.setDisplayName(profile.displayName);
                 }
 
-                this.profile= {...this.profile, ...profile as Profile};
+                this.profile = { ...this.profile, ...profile as Profile };
                 this.loading = false;
             })
         } catch (error) {
@@ -155,10 +155,9 @@ export default class ProfileStore {
 
             runInAction(() => {
 
-                if(this.profile && this.profile.username !== store.userStore.user?.username 
-                    && this.profile.username === username)
-                {
-                    if(this.profile && this.profile.username === store.userStore.user?.username){
+                if (this.profile && this.profile.username !== store.userStore.user?.username
+                    && this.profile.username === username) {
+                    if (this.profile && this.profile.username === store.userStore.user?.username) {
                         following ? this.profile.followingCount++ : this.profile.followingCount--;
                     }
 
@@ -167,8 +166,7 @@ export default class ProfileStore {
                 }
 
                 this.followings.forEach(profile => {
-                    if(profile.username === username)
-                    {
+                    if (profile.username === username) {
                         profile.isFollowing ? profile.followersCount-- : profile.followersCount++;
                         profile.isFollowing = !profile.isFollowing;
                     }
@@ -202,4 +200,24 @@ export default class ProfileStore {
             })
         }
     }
+
+    loadUserActivities = async (username: string, eventConditions?: string) => {
+        this.loadingActivities = true;
+
+        try {
+            const userActivitiesCollection = await agent.Profiles.listUserActivities(username, eventConditions!);
+
+            runInAction(() => {
+                this.userActivities = userActivitiesCollection;
+                this.loadingActivities = false;
+            });
+        } catch (error) {
+            console.log(`error loading the activities: ${error}`);
+
+            runInAction(() => {
+                this.loadingActivities = false;
+            });
+        }
+    };
+    
 }
