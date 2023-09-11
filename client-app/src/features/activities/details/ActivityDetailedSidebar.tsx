@@ -1,9 +1,4 @@
-/*
-    NOTE: 
-    this only hardcoded User followers feature. NOT WORKING AS OF JUNE 13, 2023
-*/
 import { observer } from "mobx-react-lite";
-import React from "react";
 import { Link } from "react-router-dom";
 import { Segment, List, Item, Label, Image } from "semantic-ui-react";
 import { Activity } from "../../../app/models/activity";

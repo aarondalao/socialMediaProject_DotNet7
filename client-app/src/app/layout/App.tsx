@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Container } from "semantic-ui-react";
 import NavBar from "./navBar";
 import { observer } from "mobx-react-lite";
