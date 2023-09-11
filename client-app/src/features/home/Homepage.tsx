@@ -27,7 +27,7 @@ export default observer(function Homepage() {
         {userStore.isLoggedIn ? (
           // render if user is logged in
           <>
-            <Header as="h2" inverted content="Welcome to How-to Club" />
+            <Header as="h2" inverted content={`Welcome back ${userStore.user?.displayName} to How-to Club`} />
             <Button
               as={Link}
               to="/activities"
