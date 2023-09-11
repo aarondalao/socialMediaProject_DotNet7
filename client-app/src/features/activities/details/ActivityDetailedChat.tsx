@@ -3,7 +3,7 @@
     this only hardcoded comment feature. NOT WORKING AS OF JUNE 13, 2023
 */
 import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Header, Segment, Comment, Loader } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 import { Link } from "react-router-dom";
