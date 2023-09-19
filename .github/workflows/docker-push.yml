@@ -1,7 +1,7 @@
 name: docker-push
 
 on:
-  worflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   docker:
