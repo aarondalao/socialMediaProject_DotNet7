@@ -74,7 +74,7 @@ export default observer(function ActivityForm() {
   return (
     <Segment clearing>
       {currentLocation.pathname === "/createActivity" ? (
-        <Header size="large" color="teal">
+        <Header size="large" color="blue">
           {" "}
           Create an Activity{" "}
         </Header>
@@ -84,7 +84,7 @@ export default observer(function ActivityForm() {
           Edit an Activity{" "}
         </Header>
       )}
-      <Header content="Activity Details" color="teal" sub/>
+      <Header content="Activity Details" color="blue" sub/>
 
       <Formik
         initialValues={activity}
@@ -114,7 +114,7 @@ export default observer(function ActivityForm() {
               dateFormat="MMMM d, yyyy  h:mm aa"
             />
 
-            <Header content="Location Details" color="teal" sub/>
+            <Header content="Location Details" color="blue" sub/>
 
             <MyTextInput placeholder="City" name="city" />
             <MyTextInput placeholder="Venue" name="venue" />

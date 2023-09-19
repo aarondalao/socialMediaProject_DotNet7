@@ -29,7 +29,7 @@ export default observer(function NavBar() {
               content="Create Activity"
               // onClick={() => activityStore.openForm()}
               as={NavLink}
-              to="/createActivity"
+              to="/createActivity" 
             />
           </Menu.Item>
 

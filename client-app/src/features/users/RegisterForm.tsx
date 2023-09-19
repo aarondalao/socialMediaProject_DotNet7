@@ -30,7 +30,7 @@ export default observer(function RegisterForm() {
     >
       {({ handleSubmit, isSubmitting, errors, isValid, dirty }) => (
         <Form className="ui form error" onSubmit={handleSubmit} autoComplete="off">
-          <Header as="h2" content="Register" color="teal" textAlign="center" />
+          <Header as="h2" content="Register" color="blue" textAlign="center" />
 
           <MyTextInput placeholder="Display Name" name="displayName" />
           <MyTextInput placeholder="User Name" name="userName" />
@@ -40,7 +40,7 @@ export default observer(function RegisterForm() {
           <ErrorMessage
             name="error"
             render={() => (
-              <ValidationError errors={errors.error} />
+              <ValidationError errors={errors.error as unknown as string[]} />
             )}
           />
           <Button

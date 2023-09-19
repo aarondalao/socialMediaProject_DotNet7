@@ -44,9 +44,9 @@ namespace Application.Profiles
 
                 query = request.EventConditions switch
                 {
-                    "past" => query.Where(a => a.Date <= DateTime.Now ),
+                    "past" => query.Where(a => a.Date <= DateTime.UtcNow ),
                     "hosting" => query.Where(a => a.HostUsername == request.Username),
-                    _ => query.Where(a => a.Date >= DateTime.Now)
+                    _ => query.Where(a => a.Date >= DateTime.UtcNow)
                 };
 
                 Console.WriteLine($"modified query: {query}");
