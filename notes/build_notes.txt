@@ -192,7 +192,7 @@ before building:
     then edit out all files that violates the linting rules!
   
 
-BUILDING PROCESS
+CLIENT SIDE BUILDING PROCESS
 
 1) in the client app directory, run this command to run build:
 
@@ -224,7 +224,7 @@ controller for this.
 
   that will return a PhysicalFile and inside the open close parenthesis:
 
-    Path.Combine(Directory,GetCurrentDirectory(), "wwwroot", "index.html"), "text/HTML"
+    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "index.html"), "text/HTML"
 
   b) go back to program.cs and add the new middleware 
       
@@ -237,5 +237,373 @@ controller for this.
   you should be able to see the production build of the application when using localhost:{YOUR_API_PORT},
   not the localhost:{YOUR_CLIENT_PORT}
 
+MIGRATING TO POSTGRES
+
+1) docker run --name dev -e POSTGRES_USER=admin -e POSTGRES_PASSWORD={MY_POSTGRES_PASSWORD} 
+-p 5432:5432 -d postgres:latest
+
+  where:
+    -p = Ports used for postgres
+    -d => detach mode. docker will run it in the background
+    --name = name of the container
+    -e  = environment
+    {MY_POSTGRES_PASSWORD} => check the value of this password at my key storage
+
+2) run your container
+
+3) in vs code, delete your migrations folder and drop the database by:
+
+  dotnet ef database drop -p Persistence -s API
+
+  where
+
+  -p is shortcut for Project to use. note upon executing a command with this option will be applied to the current 
+    working directory
+  -s is shortcut for startup project.
+
+  ADDITIONAL! :
+  a) change the DateTime.Now into DateTime.UtcNow all throughout the app! key locations:
+    * ActivityDto.cs
+    * ActivityParams.cs
+    * CommentDto.cs
+    * TokenService.cs
+    * ListActivities.cs
+    * UserActivityDto.cs
+    * Activity.cs
+    * Comment.cs
+    * seed.cs
+
+  b) before we commence switching from SQLite to PosgreSQL DB, we need to make sure that our code will run properly,
+    particularly about the difference on how these two 2 DB's handle date and time. SQLite does not have a native 
+    DateTime.UtcNow method unlike PostgreSQL.
+    
+    at the commentStore.ts, have a look at the createHubConnection method and change the
+    new Date(comment.createdAt + 'Z')
+    into
+    new Date(comment.createdAt)
+    
+4) install a new package in Nuget Gallery and look for the package named:
+    
+    "Npgsql.EntityFrameworkCore.PostgreSQL" by Shay Rojansky, Austin Drenski, et.al
+
+  BUT make sure the version of your RUNTIME (check via dotnet --version or dotnet --info) MATCHES WITH THE VERSION 
+  NUMBER OF THIS PACKAGE.
+
+  after a successful installation, go to terminal and execute dotnet restore to restore the new changes to our project.
+  
+5) at the appsettings.Development.json, change the connectionString to the equivalent connection strings for PostgreSQL
+
+  "Server=localhost; Port=5432; User Id=admin; Password= {MY_POSTGRES_PASSWORD}; Database=how2club;"
+
+  note: check the MY_POSTGRES_PASSWORD at my usual key folder
+
+6) at the applicationServiceExtensions.cs, at the services.AddDbContext<DataContext>(options => {}), 
+replace UseSqliteinto UseNpgsql
+
+  options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+
+7) stop the API server the create a new migrations by
+
+  dotnet ef migrations add <NameOfMigration> InitialPostgresMigration -p Persistence -s API
+
+8) go to API directory and execute at the terminal dotnet run to see if the table creation is successful into the
+ database. 
+
+  addtional:
+  install the extension PostgreSQL in vs code marketplace
 
 
+
+PUBLISHING THE APP + DB PART 1
+
+Heroku does not provide free services anymore (bummer) and im paying one instance there as well, so instead will use 
+flyio + docker or AWS ECS + docker to ship my apps to the cloud. first, we'll dockerise the app
+
+1) create a dockerfile at the root folder of the project. on the file write this:
+
+    FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+    WORKDIR /app
+
+    COPY "Reactivities.sln" "Reactivities.sln"
+    COPY "API/API.csproj" "API/API.csproj"
+    COPY "Application/Application.csproj" "Application/Application.csproj"
+    COPY "Domain/Domain.csproj" "Domain/Domain.csproj"
+    COPY "Infrastructure/Infrastructure.csproj" "Infrastructure/Infrastructure.csproj"
+    COPY "Persistence/Persistence.csproj" "Persistence/Persistence.csproj"
+
+    RUN dotnet restore "Reactivities.sln"
+
+    COPY . .
+
+    RUN dotnet publish -c Release -o out
+
+    #build a runtime image
+    FROM mcr.microsoft.com/dotnet/aspnet:7.0
+    COPY --from=build-env /app/out .
+    ENTRYPOINT [ "dotnet", "API.dll" ]
+
+
+    where:
+    FROM -> this will set the base image that we want to start from
+    mcr.microsoft.com/dotnet/sdk:7.0 -> the image that we want. here's the link to the  image: 
+      https://hub.docker.com/_/microsoft-dotnet-sdk/
+    AS -> a subsequent task to be used for the base image
+    build-env -> this represents the base layer of the new image, a starting point
+    WORKDIR -> the working path that we're going to use inside the Docker container. take note that THIS IS INSIDE THE 
+      DOCKER CONTAINER NOT OUR FILE SYSTEM/ OUR LOCAL MACHINE
+    COPY -> copy files or folder from source to destination
+    RUN -> execute the commands on top of the current image
+    -c -> configuration to publish for
+    -o -> the output directory to place the plublished items
+    ENTRYPOINT -> this configures the start up executable inside the container 
+
+2) create a new file in the root folder named as .dockerignore and we're going to ignore
+  bin and objs folders
+
+    **/bin
+    **/obj
+
+  after this, open the appsettings.json and replace the value of the Server in the connection string with this: 
+
+    "Server=host.docker.internal;...omitted for brevity"
+
+  then save the file
+
+3) stop the application if its running then in the terminal, go to root folder and run this command to build our image:
+
+  docker build -t aarondalao/how2club .
+  
+  where:
+  -t -> target name. this includes the username in dockerhub plus / then the name of of the image
+
+ 4) run the new image !
+    docker run --rm -it -p 8080:80 aarondalao/how2club
+
+    where:
+    --rm -> remove the image from the container once we're finished
+    --it -> interactive mode. so we can see the dotnet output just as we're running it locally in developer mode
+    -p -> ports to use. docker will use port 90 for the webapp and we'll be able to access it via port 8080 
+  
+    now test the webapp via localhost:8080
+
+  5) push the image to dockerhub!
+    but first login to your docker account. you can do that in terminal by:
+      docker login
+    
+    then run this in the terminal:
+
+      docker push {CONTAINER_NAME|IMAGE_NAME}:latest
+
+    lastly, check your repo in dockerhub.com
+
+PUBLISHING THE WEBAPP + DB PART 2
+  now lets have a look at the hosting site side of things, for this sample run ill use flyio since heroku is not free anymore
+  (or until ive researched enough resources to deploy apps on AWS(either via EC2, Elastic Beanstalk, VMWare on cloud, 
+  ECS, EKS, Fargate or Lambda )).
+
+resource: https://fly.io/docs/speedrun/
+
+1) install flyctl, the cli of flyio
+  mac: via homebrew package manager
+    brew install flyctl
+    or 
+    run the script
+    curl -L https://fly.io/install.sh | sh
+  linux: same thing
+    curl -L https://fly.io/install.sh | sh
+  windows: in powershell
+    pwsh -Command "iwr https://fly.io/install.ps1 -useb | iex"
+
+2) setup your login creds, and launch your fly.io instance
+  after installation, we can sign up to Fly.io via terminal. sweet mother of potataus
+
+    fly auth signup
+
+    notes:  
+    source -> reads and executes command from the file specified as its argument in the current shell environment
+          -> useful to load functions variables and configuration files into shell scripts
+    nano -> a command line text editor for Unix and Linux distros
+    more info on bash shell scripting: https://wiki.archlinux.org/title/Bash#Configuration_files
+  
+  then sign in
+
+    fly auth sign in
+
+  after that, youll be able to see that youve successfully logged in. execute
+
+    fly launch --image {IMAGE_NAME}
+    note:
+      {IMAGE_NAME} => MUST BE EXACTLY THE SAME AS THE DOCKER IMAGE UPLOADED IN YOUR DOCKERHUB!
+
+  to generate a fly.toml file. this file will be used to configure our cluster in the flyio cloud. 
+
+3) set up environment variables and secrets to fly
+
+  have a look at the internal_port = 8080. This will be the por that our app is going to use and fly.IO will
+  use this internally as well, but the configuration of our Docker image is automatically set to its default for prod app,
+  which is port 80. we need to tell our webapp that we want to run the app on Port 80.
+
+  open up the newly generated fly.toml file and then add on these configurations:
+
+  [env]
+    ASPNETCORE_URLS="http://+:8080"
+
+  make this as accurate as possible, if not, fly.io will run into some health checks against the port and it will 
+  either eventually times out or fails with considerably vague non-specific error stack traces.
+
+  set up our cloudinary api settings:
+    Cloudinary__CloudName="{CLOUD_NAME}"
+    Cloudinary__ApiKey="{CLOUD_API_KEY}"
+
+  NOTE:
+    * if having trouble finding the value for those keys, please have a look at the  keys at appsettings file. 
+    * THE NAME ARE DOUBLE UNDERSCORE, NOT SINGLE
+
+  then,we need to store our token key and the cloudinary key into production. in order for us to brows and store our 
+  secret files to the flyio, we can use this command:
+
+    fly secrets list
+    fly secrets set {TOKEN_NAME_TO_BE_STORED}
+
+    NOTE: 
+    * i have changed my token_key password, from a passphrase into a very long password
+    * the key that we're storing needs to be EXACTLY THE SAME NAME from the one we just build and deployed to
+      docker image BUT THE VALUE SHOULD NOT INCLUDE THE OPEN AND CLOSE COLONS.
+
+  this will stage the secrets into our deployment.
+  
+  next, we need to edit our dockerfile to expose our port that will be used as an entry point to the webapp for the 
+  health checks from Fly.IO : 
+
+    EXPOSE 8080
+  
+  Connect the webapp instance in the FLY.IO cloud to the DB(postgres) instance 
+
+4) go to applicationServiceExtensions.cs, then change the connection string by using the DATABASE_URL from fly secrets 
+  list:
+
+    services.AddDbContext<DataContext>(options =>
+    {
+      var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+      string connStr;
+      // Depending on if in development or production, use either FlyIO
+      // connection string, or development connection string from env var.
+      if (env == "Development")
+      {
+          // Use connection string from file.
+          connStr = config.GetConnectionString("DefaultConnection");
+      }
+      else
+      {
+          // Use connection string provided at runtime by FlyIO.
+          var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+          // Parse connection URL to connection string for Npgsql
+          connUrl = connUrl.Replace("postgres://", string.Empty);
+          var pgUserPass = connUrl.Split("@")[0];
+          var pgHostPortDb = connUrl.Split("@")[1];
+          var pgHostPort = pgHostPortDb.Split("/")[0];
+          var pgDb = pgHostPortDb.Split("/")[1];
+          var pgUser = pgUserPass.Split(":")[0];
+          var pgPass = pgUserPass.Split(":")[1];
+          var pgHost = pgHostPort.Split(":")[0];
+          var pgPort = pgHostPort.Split(":")[1];
+          var updatedHost = pgHost.Replace("flycast", "internal");
+          connStr = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+      }
+      // Whether the connection string came from the local development configuration file
+      // or from the environment variable from FlyIO, use it to set up your DbContext.
+      options.UseNpgsql(connStr);
+    });
+
+5) after the changes made, rebuild the docker image for our webapp, then push it to dockerhub.
+6) the final command:
+    fly deploy
+
+CI/CD (Continuos Integration / Continuous Delivery) BASICS part 1
+
+so far I've managed to deploy my production webapp successfully, but thats only because im using linux distro of ubuntu 
+with an intel cpu (amd64 architecture). if i used arm64 it would be a different situation. what if i am in a 
+"hipster-caramel-latte-with-organic-oat-milk-mac-user" situation? this would be my go to approach:
+
+introducing github actions! 
+
+we are particularly looking at this action which was created by docker: https://github.com/docker/build-push-action
+essentially this would push a new image to docker whenever we successfully pushed changes to github. now we are NOT
+going to push things to dockerhub automatically as we still need to do pull requests before merging to main. Also we are
+not going to add the docker/build-push-action action directy to github browser as this can disrupt my branches in github 
+(so far i haven't pushed any changes since client-side linting/building, and pre-building the API layer side of 
+things.).
+
+so first things first. on the project root folder, create a new folder called .github and on this folder we need to create 
+a folder called workflows.on workflows folder, create a file called docker-image.yml. this is the file that we're 
+going to use for automating the docker push.
+
+name: ci
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: user/app:latest
+
+then modify this into:
+
+name: docker-push
+
+on:
+  worflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with: 
+          push: true
+          tags: aarondalao/how2club:latest
+
+
+1) go to github.com, and go to your project settings. from the settings menu, scroll down and find the Secrets/actions feature at the
+  security tab. from then on you'll see a green button to the right, click the New Repository Secret to add your dockerhub
+  username and token.
+
+2) make changes to your application
+
+3) push your changes to github
+
+ADDITIONAL TASKS:
+
+  REMOVE ALL CONSOLE.LOGS IN THE CLIENT_APP BEFORE PUSHING TO GITHUB!!!!

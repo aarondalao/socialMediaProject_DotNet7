@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function ActivityListItem({ activity }: Props) {
-  // console.log(activity.host?.image)
+
 
   return (
     <Segment.Group>
@@ -42,7 +42,7 @@ export default function ActivityListItem({ activity }: Props) {
 
               {activity.isGoing && !activity.isHost && (
                 <Item.Description>
-                  <Label basic color="green">
+                  <Label basic color="blue">
                     You are going to this event
                   </Label>
                 </Item.Description>
@@ -66,9 +66,9 @@ export default function ActivityListItem({ activity }: Props) {
         <Button
           as={Link}
           to={`/activities/${activity.id}`}
-          color="teal"
           floated="right"
           content="View"
+          color="blue"
         />
       </Segment>
     </Segment.Group>

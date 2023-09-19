@@ -3,7 +3,7 @@ body{
 }
 
 .ui.inverted.top.fixed.menu{
-  background-image: linear-gradient(135deg, rgb(24,42,115)0%, rgb(33,138,174)69%, rgb(32,167,172))!important;
+  background-image: linear-gradient(135deg, #4BB481 0%, #4BB3B4 69%, #4B7EB4 )!important;
 }
 
 div .react-datepicker {
@@ -24,12 +24,13 @@ div .react-datepicker {
   align-items: center;
   background-image: linear-gradient(
           135deg,
-          rgb(24, 42, 115) 0%,
-          rgb(33, 138, 174) 69%,
-          rgb(32, 167, 172) 89%
+          #4BB481 0%,
+          #4BB3B4 69%,
+          #4B7EB4 89%
   ) !important;
   height: 100vh;
 }
+
 
 .masthead .ui.menu .ui.button,
 .ui.menu a.ui.inverted.button {

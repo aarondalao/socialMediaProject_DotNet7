@@ -16,7 +16,6 @@ export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
   function onCrop() {
     if (cropper) {
       cropper.getCroppedCanvas().toBlob((blob) => {
-        console.log(blob)
         uploadPhoto(blob!);
       });
     }
@@ -31,12 +30,12 @@ export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
   return (
     <Grid>
       <Grid.Column width={4}>
-        <Header sub color="teal" content="Step 1 - add photo" />
+        <Header sub color="blue" content="Step 1 - add photo" />
         <PhotoWidgetDropzone setFiles={setFiles} />
       </Grid.Column>
       <Grid.Column width={1} />
       <Grid.Column width={4}>
-        <Header sub color="teal" content="Step 2 - resize image" />
+        <Header sub color="blue" content="Step 2 - resize image" />
         {files && files.length > 0 && (
           <PhotoWidgetCropper
             setCropper={setCropper}
@@ -46,7 +45,7 @@ export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
       </Grid.Column>
       <Grid.Column width={1} />
       <Grid.Column width={4}>
-        <Header sub color="teal" content="Step 3 - preview & upload" />
+        <Header sub color="blue" content="Step 3 - preview & upload" />
         {files && files.length > 0 && (
           <>
             <div

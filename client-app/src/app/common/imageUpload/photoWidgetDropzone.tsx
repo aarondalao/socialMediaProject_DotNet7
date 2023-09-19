@@ -19,7 +19,7 @@ export default function PhotoWidgetDropzone({setFiles} : Props) {
   } as object;
 
   const dzActive = {
-    borderColor: 'green'
+    borderColor: 'blue'
   }
 
   //   boilerplate provided by react-dropzone (https://github.com/react-dropzone/react-dropzone)

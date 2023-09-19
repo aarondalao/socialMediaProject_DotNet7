@@ -16,6 +16,7 @@ namespace Persistence
                     new AppUser{DisplayName = "Lorah", UserName = "lorah", Email = "lorah@test.com"},
                     new AppUser{DisplayName = "Joy", UserName = "joy", Email = "joy@test.com"},
                     new AppUser{DisplayName = "Timmy", UserName = "timmy", Email = "timmy@test.com"},
+                    new AppUser{DisplayName = "Rosetha", UserName = "rosetha", Email = "Jhanielle_Rosetha@test.com"},
                 };
 
                 // TODO: DO NOT IMPLEMENT THIS IN REAL WORLD SCENARIO
