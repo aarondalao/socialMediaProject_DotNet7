@@ -607,3 +607,79 @@ jobs:
 ADDITIONAL TASKS:
 
   REMOVE ALL CONSOLE.LOGS IN THE CLIENT_APP BEFORE PUSHING TO GITHUB!!!!
+
+CI/CD BASICS
+
+at the moment, ive managed to set up a github action to build a docker image and push the docker image to hub.docker repo
+via triggering it (somewhat automatic, but need to be aware it still has to be done manually). Would it be better if we
+also automate our deployment of our app to fly.io ? Here's how:
+
+1) edit your workflows/{YOUR_GITHUB_ACTION_FILE}.yml with this:
+
+  jobs:
+    deploy:
+      name: Deploy app
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - uses: superfly/flyctl-actions/setup-flyctl@master
+        - run: flyctl deploy --remote-only
+          env:
+            FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    note: can add name or on at before declaring a job.
+
+2) on the .yml file, the docker build-push job MUST BE FINISHED first before executing the fly deploy job. to do this,
+  add the
+
+      needs: {NAME_OF_THE_FIRST_JOB}
+
+  before the 2nd deploy. Github action tends to run in parallel otherwise stated. and be careful with the indetation of
+  yml files or else it will cause errors along the building process.
+
+
+3) add the fly.io environment api token before THE JOBS LINE in the yml file
+
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  then go to your repo in github and add the new secret api token for fly.io ath the secrets and variables/actions.
+  but what is our FLY_API_TOKEN ? you can get that by going to terminal (assuming you are logged in terminal as well,
+  otherwise, execute a fly auth login) then type 
+  
+      flyctl auth token
+
+  paste the token to the value of the new secret in Actions secrets and variables.
+      
+
+more resources: https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+
+Optional :
+
+TROUBLESHOOTING DEPLOYMENTS IN FLY.IO
+
+As it stands at the moment, im having trouble accessing the app because it's throwing a status code 500 server error but
+there's not much detailed information on the error message thrown by the prod server. How will i start fixing this?
+
+these are some of the ways to get infomation:
+
+* note:
+  DO NOT DEBUG IN PROD. DEVELOPMENT HAS MUCH MORE TOOLS THAT CAN BE USED FOR DEBUGGING RATHER THAN PROD. MAKE SURE 
+  EVERYTHING IN DEV ARE TESTED AND PASSED BEFORE PUSHING TO PROD! 
+
+1) on fly.io dashboard, click your production app, and on the left sidebar, click the monitoring. it should pop the infos
+in on the current processes done by the docker image. 
+
+2) almost the same thing but this time you can access the monitoring via the terminal by:
+  a) login via terminal
+        fly auth login
+  b) confirm your email address
+  c) type in the terminal:
+        fly logs -a {APP_NAME}
+
+        WHERE:
+        -a -> app string, the name of the app to be used
+
+
+
+ 
