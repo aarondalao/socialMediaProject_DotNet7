@@ -1,3 +1,7 @@
+/*
+    TODO: remove CSP REPORT ONLY!!!!
+*/ 
+
 using API.Extensions;
 using API.Middleware;
 using Persistence;
@@ -41,7 +45,7 @@ app.UseXContentTypeOptions();
 app.UseReferrerPolicy( options => options.NoReferrer());
 app.UseXXssProtection(options => options.EnabledWithBlockMode());
 app.UseXfo(options => options.Deny());
-app.UseCspReportOnly(options => options
+app.UseCsp(options => options
     .BlockAllMixedContent()
     .StyleSources(s => s.Self().CustomSources("https://fonts.googleapis.com"))
     .FontSources(s =>s.Self().CustomSources("https://fonts.gstatic.com", "data:"))
