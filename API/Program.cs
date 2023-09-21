@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using API.SignalR;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +36,34 @@ var app = builder.Build();
 // custom exception handler 
 app.UseMiddleware<ExceptionMiddleware>();
 
+// additional headers for security. added 21/09/2023
+app.UseXContentTypeOptions();
+app.UseReferrerPolicy( options => options.NoReferrer());
+app.UseXXssProtection(options => options.EnabledWithBlockMode());
+app.UseXfo(options => options.Deny());
+app.UseCspReportOnly(options => options
+    .BlockAllMixedContent()
+    .StyleSources(s => s.Self().CustomSources("https://fonts.googleapis.com"))
+    .FontSources(s =>s.Self().CustomSources("https://fonts.gstatic.com", "data:"))
+    .FrameAncestors(s => s.Self())
+    .ImageSources(s => s.Self().CustomSources("blob:", "https://res.cloudinary.com"))
+    .ScriptSources(s => s.Self())
+);
+
+// modified 21/09/2023
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else{
+
+    app.Use(async (context, next) => {
+    context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
+    await next.Invoke();
+  });
+}
+
 
 app.UseCors("CorsPolicy");
 
