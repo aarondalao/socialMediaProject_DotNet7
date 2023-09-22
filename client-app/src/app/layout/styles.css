@@ -48,3 +48,30 @@ div .react-datepicker {
 }
 
 /*end home page styles*/
+
+/* TODO: make the app responsive */
+
+/* xs screens */
+@media only screen and (max-width: 375px) {
+  
+}
+
+/* xs screens */
+@media only screen and (min-width: 375px) and (max-width: 667) {
+  
+}
+
+/* xs screens */
+@media only screen and (min-width: 375px) and (max-width: 667) {
+  
+}
+
+/* xs screens */
+@media only screen and (min-width: 375px) and (max-width: 667) {
+  
+}
+
+/* xs screens */
+@media only screen and (min-width: 1920px) {
+  
+}
