@@ -4,6 +4,7 @@ body{
 
 .ui.inverted.top.fixed.menu{
   background-image: linear-gradient(135deg, #4BB481 0%, #4BB3B4 69%, #4B7EB4 )!important;
+  
 }
 
 div .react-datepicker {
@@ -22,6 +23,7 @@ div .react-datepicker {
 .mastHead {
   display: flex;
   align-items: center;
+  justify-content: center;
   background-image: linear-gradient(
           135deg,
           #4BB481 0%,
@@ -43,8 +45,59 @@ div .react-datepicker {
 }
 
 .masthead h2 {
-  font-size: 1.7em;
+  font-size: 10px;
   font-weight: normal;
 }
 
+
+
 /*end home page styles*/
+
+/* xtra small screens */
+@media only screen and (max-width: 320px ){
+
+  /* TODO: delete the background image changes after */
+  .mastHead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+}
+
+/* small to medium */
+@media only screen and (min-width:321px) and (max-width: 480px){
+  
+  /* TODO: delete the background image changes after */
+  .mastHead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+}
+
+/* IPads, medium mobile phones*/
+@media only screen and (min-width: 481px) and (max-width: 767px){
+  
+  /* TODO: delete the background image changes after */
+  .mastHead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+}
+
+
+/* small laptops  */
+@media only screen and (min-width: 768px) and (max-width: 991px){
+  /* TODO: delete the background image changes after */
+  .mastHead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+}

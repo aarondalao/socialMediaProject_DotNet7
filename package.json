@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/react-responsive": "^8.0.6",
+    "react-responsive": "^9.0.2"
+  }
+}

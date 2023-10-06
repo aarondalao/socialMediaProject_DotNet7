@@ -4,13 +4,13 @@ import PhotoWidgetDropzone from "./photoWidgetDropzone";
 import PhotoWidgetCropper from "./PhotoWidgetCropper";
 // import { Cropper } from 'react-cropper';
 
-interface Props{
+interface Props {
   loading: boolean;
   uploadPhoto: (file: Blob) => void;
 }
 
-export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
-  const [files, setFiles] = useState<object & {preview?: string}[]>([]);
+export default function PhotoUploadWidget({ loading, uploadPhoto }: Props) {
+  const [files, setFiles] = useState<object & { preview?: string }[]>([]);
   const [cropper, setCropper] = useState<Cropper>();
 
   function onCrop() {
@@ -23,7 +23,9 @@ export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
 
   useEffect(() => {
     return () => {
-      files.forEach((file: object & {preview?: string}) => URL.revokeObjectURL(file.preview!));
+      files.forEach((file: object & { preview?: string }) =>
+        URL.revokeObjectURL(file.preview!)
+      );
     };
   }, [files]);
 
@@ -53,8 +55,17 @@ export default function PhotoUploadWidget({loading, uploadPhoto}: Props) {
               style={{ minHeight: 200, overflow: "hidden" }}
             />
             <Button.Group widths={2}>
-              <Button loading={loading} onClick={onCrop} positive icon="check" />
-              <Button disabled={loading} onClick={() => setFiles([])} icon="close" />
+              <Button
+                loading={loading}
+                onClick={onCrop}
+                positive
+                icon="check"
+              />
+              <Button
+                disabled={loading}
+                onClick={() => setFiles([])}
+                icon="close"
+              />
             </Button.Group>
           </>
         )}

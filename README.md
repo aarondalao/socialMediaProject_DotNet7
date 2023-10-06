@@ -65,14 +65,18 @@ This solution will be using the following:
 ### TODOs
 
 - Security
-    - [ ] reseach about asymmetric security keys and implement it here to support HTTPS
-    - [ ] token validation to chech token expiry. currently the token is valid for 7 DAYS.
-    - [ ] it's fine to send tokens over the network in DEV. NOT IN PROD. use HTTPS in prod
+    - [X] reseach about asymmetric security keys and implement it here to support HTTPS
+    - [ ] refresh tokens and token validation to chech token expiry. currently the token is valid for 7 DAYS.
+    - [ ] 
 
 - Data Persistence
-    - [ ] - research about better data store than SQLite
+    - [X] - research about better data store than SQLite
     - [ ] - seed.cs |  remove line 21 -24 and remember not to use that in prod. 
+    - [ ] - horizontal scaling
 
 - client
     - [ ] - agent.ts |  if possible, convert line 19-68 into async -await instead of promise -> then chaining
-    - [ ] - Homepage.tsx | background change into stock video
+    - [ ] - Homepage.tsx | background change into stock video\
+    - [ ] - make the app responsive 
+    - [ ] - optional: link to google login
+    - [ ] - optional: link to facebook login
