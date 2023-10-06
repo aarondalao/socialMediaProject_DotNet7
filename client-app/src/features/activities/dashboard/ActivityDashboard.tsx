@@ -11,11 +11,11 @@ import ActivityListItemPlaceholder from "./ActivityListItemPlaceholder";
 export default observer(function ActivityDashboard() {
   // data store from provider
   const { activityStore } = useStore();
-  const { loadActivities, activityRegistry, setPagingParameters, pagination } = activityStore;
+  const { loadActivities, activityRegistry, setPagingParameters, pagination } =
+    activityStore;
   const [loadingNext, setLoadingNext] = useState(false);
 
   function handleGetNextItems() {
-
     setLoadingNext(true);
     setPagingParameters(new PagingParams(pagination!.currentPage + 1));
     loadActivities().then(() => setLoadingNext(false));
@@ -27,14 +27,14 @@ export default observer(function ActivityDashboard() {
     }
   }, [loadActivities, activityRegistry]);
 
-
   // if (activityStore.loadingInitial && !loadingNext) return <LoadingComponent  content='Loading Events and Activities near you...'/>
-
 
   return (
     <Grid>
       <Grid.Column width="10">
-        {activityStore.loadingInitial && activityRegistry.size === 0 && !loadingNext ? (
+        {activityStore.loadingInitial &&
+        activityRegistry.size === 0 &&
+        !loadingNext ? (
           <>
             <ActivityListItemPlaceholder />
             <ActivityListItemPlaceholder />
@@ -44,7 +44,11 @@ export default observer(function ActivityDashboard() {
           <InfiniteScroll
             pageStart={0}
             loadMore={handleGetNextItems}
-            hasMore={!loadingNext && !!pagination && pagination.currentPage < pagination.totalPages}
+            hasMore={
+              !loadingNext &&
+              !!pagination &&
+              pagination.currentPage < pagination.totalPages
+            }
             initialLoad={false}
           >
             <ActivityList />
