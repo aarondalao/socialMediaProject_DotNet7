@@ -24,7 +24,6 @@ export default class CommonStore{
         reaction(
             () =>this.token,
             token => {
-                // TODO: saving tokens in a local storage is a security risk right here. research about reduce risk 
                 if(token){
                     localStorage.setItem('jwt', token);
                 }

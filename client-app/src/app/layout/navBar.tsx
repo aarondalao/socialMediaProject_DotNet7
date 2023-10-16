@@ -14,6 +14,8 @@ export default observer(function NavBar() {
     userStore: { user, logout, isLoggedIn },
   } = useStore();
 
+  
+
   return (
     <Menu inverted fixed="top">
       {isLoggedIn ? (

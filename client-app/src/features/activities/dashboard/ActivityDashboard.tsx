@@ -1,5 +1,9 @@
+/*
+  TODO: filter and datetime should be hidden when in mobile view
+*/
+
 import { useEffect, useState } from "react";
-import { Grid, Loader } from "semantic-ui-react";
+import { Grid, Loader, Segment } from "semantic-ui-react";
 import ActivityList from "./ActivityList";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
@@ -10,9 +14,11 @@ import ActivityListItemPlaceholder from "./ActivityListItemPlaceholder";
 
 export default observer(function ActivityDashboard() {
   // data store from provider
-  const { activityStore } = useStore();
+  const { activityStore, viewportStore } = useStore();
   const { loadActivities, activityRegistry, setPagingParameters, pagination } =
     activityStore;
+  const { width } = viewportStore;
+
   const [loadingNext, setLoadingNext] = useState(false);
 
   function handleGetNextItems() {
@@ -30,37 +36,66 @@ export default observer(function ActivityDashboard() {
   // if (activityStore.loadingInitial && !loadingNext) return <LoadingComponent  content='Loading Events and Activities near you...'/>
 
   return (
-    <Grid>
-      <Grid.Column width="10">
-        {activityStore.loadingInitial &&
-        activityRegistry.size === 0 &&
-        !loadingNext ? (
-          <>
-            <ActivityListItemPlaceholder />
-            <ActivityListItemPlaceholder />
-            <ActivityListItemPlaceholder />
-          </>
-        ) : (
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={handleGetNextItems}
-            hasMore={
-              !loadingNext &&
-              !!pagination &&
-              pagination.currentPage < pagination.totalPages
-            }
-            initialLoad={false}
-          >
-            <ActivityList />
-          </InfiniteScroll>
-        )}
-      </Grid.Column>
-      <Grid.Column width="6">
-        <ActivityFilters />
-      </Grid.Column>
-      <Grid.Column width={10}>
-        <Loader active={loadingNext} />
-      </Grid.Column>
-    </Grid>
+    <>
+      {width <= 768 ? (
+        <Segment>
+          {activityStore.loadingInitial &&
+          activityRegistry.size === 0 &&
+          !loadingNext ? (
+            <>
+              <ActivityListItemPlaceholder />
+              <ActivityListItemPlaceholder />
+              <ActivityListItemPlaceholder />
+            </>
+          ) : (
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={handleGetNextItems}
+              hasMore={
+                !loadingNext &&
+                !!pagination &&
+                pagination.currentPage < pagination.totalPages
+              }
+              initialLoad={false}
+            >
+              <ActivityList />
+            </InfiniteScroll>
+          )}
+        </Segment>
+      ) : (
+        <Grid>
+          <Grid.Column width="10">
+            {activityStore.loadingInitial &&
+            activityRegistry.size === 0 &&
+            !loadingNext ? (
+              <>
+                <ActivityListItemPlaceholder />
+                <ActivityListItemPlaceholder />
+                <ActivityListItemPlaceholder />
+              </>
+            ) : (
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={handleGetNextItems}
+                hasMore={
+                  !loadingNext &&
+                  !!pagination &&
+                  pagination.currentPage < pagination.totalPages
+                }
+                initialLoad={false}
+              >
+                <ActivityList />
+              </InfiniteScroll>
+            )}
+          </Grid.Column>
+          <Grid.Column width="6">
+            <ActivityFilters /> 
+          </Grid.Column>
+          <Grid.Column width={10}>
+            <Loader active={loadingNext} />
+          </Grid.Column>
+        </Grid>
+      )}
+    </>
   );
 });
