@@ -33,6 +33,10 @@ div .react-datepicker {
   height: 100vh;
 }
 
+.nav_bar_mobile{
+  height: 4rem;
+}
+
 
 .masthead .ui.menu .ui.button,
 .ui.menu a.ui.inverted.button {
