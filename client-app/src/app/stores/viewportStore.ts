@@ -62,4 +62,9 @@ export default class ViewportStore {
         this.filterSidebar = !this.filterSidebar;
         this.sidebarSelector = "filter";
     }
+
+    closeSidebars = () => {
+        this.navigationSidebar = false;
+        this.filterSidebar = false;
+    }
 }

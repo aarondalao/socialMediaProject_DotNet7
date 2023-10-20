@@ -24,7 +24,9 @@ export default observer(function NavbarMobile() {
     handleSidebar,
     toggleNavVisibility,
     toggleFilterVisibility,
+    closeSidebars,
   } = viewportStore;
+  
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -76,6 +78,7 @@ export default observer(function NavbarMobile() {
               visible={navigationSidebar}
               vertical
               inverted
+              
               direction="left"
             >
               <Menu.Item as={NavLink} to="/" header>
@@ -128,11 +131,12 @@ export default observer(function NavbarMobile() {
             </Sidebar>
 
             <Sidebar.Pusher
+              onClick={closeSidebars}
               dimmed={
                 sidebarSelector == "nav" ? navigationSidebar : filterSidebar
               }
             >
-              <Segment style={{ marginTop: "8em" }}>
+              <Segment style={{ marginTop: "8em" }} >
                 <Outlet />
               </Segment>
             </Sidebar.Pusher>
