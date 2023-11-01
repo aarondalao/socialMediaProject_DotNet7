@@ -7,6 +7,7 @@ import {
   Sidebar,
   Segment,
   Image,
+  Button,
 } from "semantic-ui-react";
 import { useStore } from "../stores/store";
 import { useEffect, Fragment } from "react";
@@ -26,7 +27,6 @@ export default observer(function NavbarMobile() {
     toggleFilterVisibility,
     closeSidebars,
   } = viewportStore;
-  
 
   useEffect(() => {
     window.addEventListener("resize", () => {
@@ -78,7 +78,6 @@ export default observer(function NavbarMobile() {
               visible={navigationSidebar}
               vertical
               inverted
-              
               direction="left"
             >
               <Menu.Item as={NavLink} to="/" header>
@@ -111,7 +110,6 @@ export default observer(function NavbarMobile() {
                 name="My Profile"
                 icon="user"
                 onClick={toggleNavVisibility}
-                
               />
 
               <Menu.Item name="Logout" icon="power" onClick={logout} />
@@ -136,8 +134,25 @@ export default observer(function NavbarMobile() {
                 sidebarSelector == "nav" ? navigationSidebar : filterSidebar
               }
             >
-              <Segment style={{ marginTop: "8em" }} >
+              <Segment style={{ marginTop: "8em" }}>
+              <Button
+              className="navbar-AddBtn"
+                  animated="fade"
+                  clearing
+                  fixed
+                  circular
+                  floated="right"
+                  size="massive"
+                  as={NavLink}
+                  to="/createActivity"
+                >
+                  <Button.Content visible>
+                    <Icon name="add" />
+                  </Button.Content>
+                  <Button.Content hidden>Add</Button.Content>
+                </Button>
                 <Outlet />
+                
               </Segment>
             </Sidebar.Pusher>
           </>

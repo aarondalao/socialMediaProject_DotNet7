@@ -24,14 +24,6 @@ export default class ViewportStore {
         );
     }
 
-    get windowWidth() {
-        return this.width;
-    }
-
-    get windowHeight() {
-        return this.height
-    }
-
     setWindow = (windowWidth: number, windowHeight: number) => {
         this.width = windowWidth;
         this.height = windowHeight;
@@ -48,18 +40,15 @@ export default class ViewportStore {
         }
     }
 
-    toggleAllSidebar = () => {
-        this.navigationSidebar = !this.navigationSidebar;
-        this.filterSidebar = !this.filterSidebar;
-    }
-
     toggleNavVisibility = () => {
         this.navigationSidebar = !this.navigationSidebar;
+        this.filterSidebar = false;
         this.sidebarSelector = "nav";
     }
 
     toggleFilterVisibility =()  => {
         this.filterSidebar = !this.filterSidebar;
+        this.navigationSidebar = false;
         this.sidebarSelector = "filter";
     }
 
