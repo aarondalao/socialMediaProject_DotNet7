@@ -42,7 +42,9 @@ namespace API.Extensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
 
                 // added this 18/08/2023 -> authentication for SignalR
