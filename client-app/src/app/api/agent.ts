@@ -36,7 +36,7 @@ axios.interceptors.request.use(config => {
 // TODO: if possible, convert line 19-68 into async -await instead of promise -> then chaining
 // edited: 15/06/23 
 axios.interceptors.response.use(async response => {
-    if(import.meta.env.DEV) await sleep(1000);
+    if (import.meta.env.DEV) await sleep(1000);
 
     // added : 6/9/2023
     const pagination = response.headers["pagination"];
@@ -49,13 +49,13 @@ axios.interceptors.response.use(async response => {
 
 }, (error: AxiosError) => {
 
-    const { data, status, config } = error.response as AxiosResponse;
+    const { data, status, config, headers } = error.response as AxiosResponse;
 
     switch (status) {
         case 400:
 
             // check if what we're getting is a get request
-            if (config.method === 'get' && 
+            if (config.method === 'get' &&
                 Object.prototype.hasOwnProperty.call(data.errors, 'id')) {
                 router.navigate('not-found');
             }
@@ -76,7 +76,13 @@ axios.interceptors.response.use(async response => {
             }
             break;
         case 401:
-            toast.error("unauthorized");
+            if (status === 401 && headers['www-authenticate']?.startsWith("Bearer error='invalid_token'")) {
+                store.userStore.logout();
+                toast.error('Session expired - Please login again');
+            }
+            else {
+                toast.error('Unauthorised');
+            }
             break;
         case 403:
             toast.error("forbidden");
@@ -119,7 +125,8 @@ const Activities = {
 const Account = {
     current: () => requests.get<User>('/account'),
     login: (user: UserFormValues) => requests.post<User>('/account/login', user),
-    register: (user: UserFormValues) => requests.post<User>('/account/register', user)
+    register: (user: UserFormValues) => requests.post<User>('/account/register', user),
+    refreshToken: () => requests.post<User>('/account/refreshToken', {})
 }
 
 const Profiles = {

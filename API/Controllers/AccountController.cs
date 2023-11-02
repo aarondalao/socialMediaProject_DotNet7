@@ -92,7 +92,7 @@ namespace API.Controllers
         [HttpPost("refreshToken")]
         public async Task<ActionResult<UserDto>> RefreshToken()
         {
-            // get the refresh token from the cookes
+            // get the refresh token from the cookies
             var refreshToken = Request.Cookies["refreshToken"];
 
             // get a hold of the current user, including their refresh token collection
