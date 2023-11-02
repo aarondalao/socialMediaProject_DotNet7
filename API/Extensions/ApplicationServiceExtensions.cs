@@ -61,6 +61,7 @@ namespace API.Extensions
             });
 
             // added this 3/6/23
+            // modified this 3/11/23
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>
@@ -68,6 +69,7 @@ namespace API.Extensions
                     policy.AllowAnyMethod()
                     .AllowCredentials()// <- added this 20/08 to solve Access control allow credentials header response error. CORS is blocking
                     .AllowAnyHeader()
+                    .WithExposedHeaders("WWW-Authenticate","Pagination")
                     .WithOrigins("http://localhost:3000");
                 });
             });

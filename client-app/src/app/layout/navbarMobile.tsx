@@ -7,14 +7,16 @@ import {
   Sidebar,
   Segment,
   Image,
+  Button,
 } from "semantic-ui-react";
 import { useStore } from "../stores/store";
-import { useEffect } from "react";
+import { useEffect, Fragment } from "react";
 import ActivityFilters from "../../features/activities/dashboard/ActivityFilters";
 
 export default observer(function NavbarMobile() {
   // mobx store for the window viewport
-  const { viewportStore } = useStore();
+  const { viewportStore, userStore } = useStore();
+  const { user, logout, isLoggedIn } = userStore;
   const {
     navigationSidebar,
     filterSidebar,
@@ -23,7 +25,7 @@ export default observer(function NavbarMobile() {
     handleSidebar,
     toggleNavVisibility,
     toggleFilterVisibility,
-    
+    closeSidebars,
   } = viewportStore;
 
   useEffect(() => {
@@ -38,80 +40,149 @@ export default observer(function NavbarMobile() {
   }, [setWindow, handleSidebar]);
 
   return (
-    <>
+    <Fragment>
       <Menu inverted fixed="top">
-        <Container className="nav_bar_mobile">
-          <Menu.Item as="a" onClick={toggleNavVisibility}>
-            <Icon
-              name="bars"
-              style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
-            />
-          </Menu.Item>
-
-          <Menu.Item position="right" as="a" onClick={toggleFilterVisibility}>
-            <Icon
-              name="filter"
-              style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
-            />
-          </Menu.Item>
-        </Container>
+        {isLoggedIn ? (
+          <Container className="nav_bar_mobile">
+            <Menu.Item as="a" onClick={toggleNavVisibility}>
+              <Icon
+                name="bars"
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              />
+            </Menu.Item>
+            <Menu.Item position="right" as="a" onClick={toggleFilterVisibility}>
+              <Icon
+                name="filter"
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              />
+            </Menu.Item>
+          </Container>
+        ) : (
+          <Container className="nav_bar_mobile">
+            <Menu.Item as="a" onClick={toggleNavVisibility}>
+              <Icon
+                name="bars"
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              />
+            </Menu.Item>
+          </Container>
+        )}
       </Menu>
 
       <Sidebar.Pushable>
-        <Sidebar
-          as={Menu}
-          animation="push"
-          visible={navigationSidebar}
-          vertical
-          inverted
-          direction="left"
-        >
-          <Menu.Item as={NavLink} to="/" header>
-            <Image
-              src="/assets/logo.png"
-              size="tiny"
-              style={{ marginTop: "5rem" }}
-            />
-            How-to Club
-          </Menu.Item>
+        {isLoggedIn ? (
+          <>
+            <Sidebar
+              as={Menu}
+              animation="push"
+              visible={navigationSidebar}
+              vertical
+              inverted
+              direction="left"
+            >
+              <Menu.Item as={NavLink} to="/" header>
+                <Image
+                  src="/assets/logo.png"
+                  size="tiny"
+                  style={{ marginTop: "5rem" }}
+                />
+                How-to Club
+              </Menu.Item>
 
-          <Menu.Item
-            as={NavLink}
-            to="/activities"
-            name="Activities"
-            icon="book"
-            onClick={toggleNavVisibility}
-          />
-          <Menu.Item
-            as={NavLink}
-            to="/errors"
-            name="Errors"
-            icon="ban"
-            onClick={toggleNavVisibility}
-          />
-        </Sidebar>
+              <Menu.Item
+                as={NavLink}
+                to="/activities"
+                name="Activities"
+                icon="book"
+                onClick={toggleNavVisibility}
+              />
+              <Menu.Item
+                as={NavLink}
+                to="/errors"
+                name="Errors"
+                icon="ban"
+                onClick={toggleNavVisibility}
+              />
 
-        <Sidebar
-          as={Menu}
-          animation="push"
-          visible={filterSidebar}
-          vertical
-          inverted
-          direction="right"
-        >
-          <Container style={{ marginTop: "5rem" }}>
-            <ActivityFilters />
-          </Container>
-        </Sidebar>
+              <Menu.Item
+                as={NavLink}
+                to={`/profiles/${user?.username}`}
+                name="My Profile"
+                icon="user"
+                onClick={toggleNavVisibility}
+              />
 
-        <Sidebar.Pusher
-          dimmed={sidebarSelector == "nav" ? navigationSidebar : filterSidebar}
-        >
-          <Segment style={{ marginTop: "8em" }}>
-            <Outlet />
-          </Segment>
-        </Sidebar.Pusher>
+              <Menu.Item name="Logout" icon="power" onClick={logout} />
+            </Sidebar>
+
+            <Sidebar
+              as={Menu}
+              animation="push"
+              visible={filterSidebar}
+              vertical
+              inverted
+              direction="right"
+            >
+              <Container style={{ marginTop: "5rem" }}>
+                <ActivityFilters />
+              </Container>
+            </Sidebar>
+
+            <Sidebar.Pusher
+              onClick={closeSidebars}
+              dimmed={
+                sidebarSelector == "nav" ? navigationSidebar : filterSidebar
+              }
+            >
+              <Segment style={{ marginTop: "8em" }}>
+              <Button
+              className="navbar-AddBtn"
+                  animated="fade"
+                  clearing
+                  fixed
+                  circular
+                  floated="right"
+                  size="massive"
+                  as={NavLink}
+                  to="/createActivity"
+                >
+                  <Button.Content visible>
+                    <Icon name="add" />
+                  </Button.Content>
+                  <Button.Content hidden>Add</Button.Content>
+                </Button>
+                <Outlet />
+                
+              </Segment>
+            </Sidebar.Pusher>
+          </>
+        ) : (
+          <>
+            <Sidebar
+              as={Menu}
+              animation="push"
+              visible={navigationSidebar}
+              vertical
+              inverted
+              direction="left"
+            >
+              <Menu.Item as={NavLink} to="/" header>
+                <Image
+                  src="/assets/logo.png"
+                  size="tiny"
+                  style={{ marginTop: "5rem" }}
+                />
+                How-to Club
+              </Menu.Item>
+            </Sidebar>
+            <Sidebar.Pusher dimmed={navigationSidebar}>
+              <Segment style={{ marginTop: "8em" }}>
+                <Outlet />
+              </Segment>
+            </Sidebar.Pusher>
+          </>
+        )}
       </Sidebar.Pushable>
-    </>
+    </Fragment>
   );
 });
