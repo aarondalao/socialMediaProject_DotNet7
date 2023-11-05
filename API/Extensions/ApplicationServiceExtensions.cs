@@ -8,6 +8,7 @@ using FluentValidation.AspNetCore;
 using Application.Interfaces;
 using Infrastructure.Security;
 using Infrastructure.Photos;
+using Infrastructure.Email;
 
 namespace API.Extensions
 {
@@ -92,6 +93,9 @@ namespace API.Extensions
 
             // added this 19/08
             services.AddSignalR();
+
+            // added this 4/11/2023
+            services.AddScoped<EmailSender>();
 
             return services;
         }
