@@ -45,12 +45,18 @@ export default class UserStore {
     }
 
     register = async (credentials: UserFormValues) => {
-        const user = await agent.Account.register(credentials);
-        store.commonStore.setToken(user.token);
-        runInAction(() => this.user = user);
-        this.startRefreshTokenTimer(user);
-        router.navigate('/activities');
-        store.modalStore.closeModal();
+        try {
+
+            await agent.Account.register(credentials);
+
+            router.navigate(`/account/registerSuccess?email=${credentials.email}`);
+
+            store.modalStore.closeModal();
+
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     setImage = (image: string) => {
@@ -67,7 +73,7 @@ export default class UserStore {
         try {
 
             const user = await agent.Account.refreshToken();
-            
+
             runInAction(() => this.user = user);
 
             store.commonStore.setToken(user.token);
@@ -94,6 +100,6 @@ export default class UserStore {
 
         this.refreshTokenTimeout = setTimeout(this.refreshToken, timeout) as unknown as number;
 
-        console.log({refreshTimeout : this.refreshTokenTimeout});
+        console.log({ refreshTimeout: this.refreshTokenTimeout });
     }
 }
