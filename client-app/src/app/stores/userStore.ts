@@ -3,6 +3,7 @@ import { User, UserFormValues } from "../models/User";
 import agent from "../api/agent";
 import { store } from "./store";
 import { router } from "../router/Routes";
+import { isAxiosError } from "axios";
 
 export default class UserStore {
     user: User | null = null;
@@ -53,8 +54,15 @@ export default class UserStore {
 
             store.modalStore.closeModal();
 
+        
         } catch (error) {
-            console.log(error)
+            if(isAxiosError(error) && error?.response?.status === 400 ){
+                console.log(error)
+                throw error;
+            }
+            store.modalStore.closeModal();
+            console.log(500);
+            
         }
 
     }
