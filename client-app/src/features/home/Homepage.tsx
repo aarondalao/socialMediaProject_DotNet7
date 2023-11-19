@@ -3,11 +3,12 @@
 */
 
 import { Link } from "react-router-dom";
-import { Container, Header, Segment, Image, Button } from "semantic-ui-react";
+import { Container, Header, Segment, Image, Button, Divider } from "semantic-ui-react";
 import { useStore } from "../../app/stores/store";
 import { observer } from "mobx-react-lite";
 import LoginForm from "../users/LoginForm";
 import RegisterForm from "../users/RegisterForm";
+import FacebookLogin, { FailResponse, SuccessResponse } from "@greatsumini/react-facebook-login";
 
 
 // TODO: test video
@@ -77,7 +78,22 @@ export default observer(function Homepage() {
               size="huge"
               inverted
               content="Register"
-              style={{ zIndex: 2 }}
+              style={{ zIndex: 2 }} 
+            />
+
+            <Divider inverted horizontal>Or</Divider>
+            {/* using how2club-consumer-trial app in meta dev */}
+            <FacebookLogin 
+              appId='25266070246325831'
+              onSuccess={(response: SuccessResponse) => {
+                userStore.facebookLogin(response.accessToken);
+                console.log("Facebook Login Succeeded", response)
+
+              }}
+              onFail={(response:  FailResponse) => {
+                console.log("Facebook Login Failed", response)
+              }}
+              className={`ui button facebook huge inverted ${userStore.facebookLoading && 'loading'}`}
             />
           </>
         )}

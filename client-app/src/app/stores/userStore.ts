@@ -8,6 +8,7 @@ import { isAxiosError } from "axios";
 export default class UserStore {
     user: User | null = null;
     refreshTokenTimeout?: number;
+    facebookLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -109,5 +110,25 @@ export default class UserStore {
         this.refreshTokenTimeout = setTimeout(this.refreshToken, timeout) as unknown as number;
 
         console.log({ refreshTimeout: this.refreshTokenTimeout });
+    }
+
+    facebookLogin = async (accessToken: string) => {
+        try {
+            this.facebookLoading = true;
+            const user = await agent.Account.fbLogin(accessToken);
+            store.commonStore.setToken(user.token)
+
+            runInAction(() => {
+                this.user = user;
+                this.facebookLoading = false;
+            })
+            
+            router.navigate('/activities');
+
+        } catch (error) {
+            
+            console.log(error)
+            runInAction(() => this.facebookLoading = false) ;
+        }
     }
 }
