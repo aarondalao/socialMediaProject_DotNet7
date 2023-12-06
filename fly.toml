@@ -14,6 +14,7 @@ primary_region = "syd"
   Cloudinary__ApiKey = "129783968236619"
   Cloudinary__CloudName = "dmnofpv0p"
   Sendgrid__User="testEmailSender1"
+  Facebook__AppId="25266070246325831"
 
 [http_service]
   internal_port = 8080
