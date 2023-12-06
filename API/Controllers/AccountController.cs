@@ -208,7 +208,7 @@ namespace API.Controllers
                 {
                     new Photo{
                         Id = "fb_" + facebookInfo.Id,
-                        Url = facebookInfo.Picture.Data.Url,
+                        Url = "http://graph.facebook.com/" + facebookInfo.Id +"picture?type=large&redirect=true&width=500&height=500",
                         isMain = true
                     }
                 }

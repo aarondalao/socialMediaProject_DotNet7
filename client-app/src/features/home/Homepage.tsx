@@ -95,6 +95,13 @@ export default observer(function Homepage() {
               }}
               className={`ui button facebook huge inverted ${userStore.facebookLoading && 'loading'}`}
             />
+
+            {/* <FacebookLogin
+            appId="25266070246325831"
+            onSuccess={(response: SuccessResponse) => {console.log("login passed", response)}}
+            onFail={(response: FailResponse) => {console.log("login failed"), response}}
+            className={`ui button facebook huge inverted ${userStore.facebookLoading && 'loading'}`}
+            /> */}
           </>
         )}
         </Container>
